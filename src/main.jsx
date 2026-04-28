@@ -129,9 +129,11 @@ function ParticleTitle() {
     let height = 0
     let dpr = 1
     let disposed = false
+    let lastDraw = 0
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     const makeParticles = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2)
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5)
       const rect = canvas.getBoundingClientRect()
       width = Math.max(320, rect.width)
       height = Math.max(220, rect.height)
@@ -165,7 +167,8 @@ function ParticleTitle() {
 
       const imageData = textContext.getImageData(0, 0, textCanvas.width, textCanvas.height).data
       const nextParticles = []
-      const step = Math.max(2, Math.floor(width / 330))
+      const step = width < 700 ? 8 : 6
+      const maxParticles = width < 700 ? 360 : 760
 
       for (let y = 0; y < textCanvas.height; y += step * dpr) {
         for (let x = 0; x < textCanvas.width; x += step * dpr) {
@@ -180,18 +183,31 @@ function ParticleTitle() {
               ty: targetY,
               vx: 0,
               vy: 0,
-              size: Math.random() * 0.75 + 0.7,
+              size: Math.random() * 0.7 + 0.65,
               hue: Math.random() > 0.5 ? 316 : 272,
-              phase: Math.random() * Math.PI * 2,
             })
           }
         }
       }
 
-      particles.splice(0, particles.length, ...nextParticles)
+      if (nextParticles.length > maxParticles) {
+        const stride = nextParticles.length / maxParticles
+        const reducedParticles = []
+        for (let index = 0; index < maxParticles; index += 1) {
+          reducedParticles.push(nextParticles[Math.floor(index * stride)])
+        }
+        particles.splice(0, particles.length, ...reducedParticles)
+      } else {
+        particles.splice(0, particles.length, ...nextParticles)
+      }
     }
 
-    const draw = () => {
+    const draw = (timestamp = 0) => {
+      if (timestamp - lastDraw < 33) {
+        animationFrame = requestAnimationFrame(draw)
+        return
+      }
+      lastDraw = timestamp
       context.clearRect(0, 0, width, height)
       context.globalCompositeOperation = 'source-over'
       context.globalCompositeOperation = 'lighter'
@@ -216,16 +232,15 @@ function ParticleTitle() {
         particle.x += particle.vx
         particle.y += particle.vy
 
-        const twinkle = 0.58 + Math.sin(performance.now() * 0.0012 + particle.phase) * 0.26
-        context.fillStyle = `hsla(${particle.hue}, 100%, ${68 + twinkle * 18}%, ${0.58 + twinkle * 0.28})`
-        context.shadowColor = `hsla(${particle.hue}, 100%, 70%, 0.65)`
-        context.shadowBlur = 4
+        context.fillStyle = `hsla(${particle.hue}, 100%, 78%, 0.7)`
         context.beginPath()
         context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
         context.fill()
       })
 
-      animationFrame = requestAnimationFrame(draw)
+      if (!reducedMotion) {
+        animationFrame = requestAnimationFrame(draw)
+      }
     }
 
     const movePointer = (event) => {

@@ -71,7 +71,7 @@ a {
 .site-header {
   align-items: center;
   background: rgba(8, 5, 15, 0.76);
-  backdrop-filter: blur(22px);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 93, 215, 0.2);
   box-shadow: 0 0 34px rgba(196, 76, 255, 0.12);
   display: flex;
@@ -146,7 +146,6 @@ nav a:hover {
 .orbital {
   border: 1px solid rgba(255, 93, 215, 0.18);
   border-radius: 999px;
-  filter: drop-shadow(0 0 20px rgba(196, 76, 255, 0.35));
   position: absolute;
 }
 
@@ -203,7 +202,6 @@ nav a:hover {
   border: 1px solid rgba(104, 246, 255, 0.12);
   border-radius: 50%;
   content: "";
-  filter: drop-shadow(0 0 28px rgba(104, 246, 255, 0.16));
   position: absolute;
 }
 
@@ -253,7 +251,7 @@ nav a:hover {
   display: block;
   height: 100%;
   inset: 0;
-  opacity: 0.34;
+  opacity: 0.2;
   position: absolute;
   touch-action: none;
   width: 100%;
@@ -277,7 +275,6 @@ nav a:hover {
 }
 
 .particle-word span {
-  animation: particleShimmer 9s ease-in-out infinite;
   background:
     radial-gradient(circle, rgba(255, 255, 255, 0.98) 0 1px, transparent 1.65px),
     radial-gradient(circle, rgba(255, 93, 215, 0.9) 0 1px, transparent 1.8px),
@@ -286,7 +283,6 @@ nav a:hover {
   background-position: 0 0, 4px 5px, 0 0;
   background-size: 7px 7px, 10px 10px, 100% 100%;
   color: transparent;
-  filter: drop-shadow(0 0 14px rgba(255, 93, 215, 0.42));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -550,7 +546,6 @@ li + li {
 
 .wild-card svg {
   color: var(--cyan);
-  filter: drop-shadow(0 0 12px rgba(104, 246, 255, 0.6));
 }
 
 .wild-card span,
@@ -689,7 +684,6 @@ li + li {
 .map-continent {
   background: linear-gradient(135deg, rgba(104, 246, 255, 0.2), rgba(255, 93, 215, 0.13));
   border: 1px solid rgba(104, 246, 255, 0.16);
-  filter: blur(0.2px) drop-shadow(0 0 12px rgba(104, 246, 255, 0.16));
   position: absolute;
   transform-origin: center;
   z-index: 1;
@@ -773,7 +767,6 @@ li + li {
   stroke: var(--pink);
   stroke-linecap: round;
   stroke-width: 3;
-  filter: drop-shadow(0 0 8px rgba(255, 93, 215, 0.82));
 }
 
 .route-tw-ucl {
@@ -795,7 +788,6 @@ li + li {
 .route-dot {
   fill: #ffffff;
   opacity: 0;
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
   animation: showDot 4.2s ease-in-out infinite;
 }
 
@@ -900,7 +892,6 @@ li + li {
 
 .contact-spark {
   color: var(--pink);
-  filter: drop-shadow(0 0 18px rgba(255, 93, 215, 0.8));
 }
 
 .contact-band h2 {
@@ -1058,6 +1049,32 @@ li + li {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 760px), (pointer: coarse) {
+  body::after,
+  .space-grid::after,
+  .orbital,
+  .signal-line,
+  .hero::before,
+  .hero::after,
+  .particle-field {
+    display: none;
+  }
+
+  .space-grid {
+    animation: none;
+    opacity: 0.16;
+  }
+
+  .globe-sphere,
+  .globe-sphere::before,
+  .route-path,
+  .route-dot,
+  .campus-pin {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
   }
 }
 
