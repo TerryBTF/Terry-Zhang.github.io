@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   ArrowUpRight,
   BrainCircuit,
   BriefcaseBusiness,
+  Camera,
+  Compass,
   GraduationCap,
   Mail,
   MapPin,
@@ -11,7 +13,7 @@ import {
   Phone,
   Radar,
   Route,
-  Wrench,
+  Sparkles,
 } from 'lucide-react'
 import './styles.css'
 
@@ -109,6 +111,196 @@ const skills = [
 
 const asset = (path) => `${import.meta.env.BASE_URL}${path}`
 
+function playMusicBoxTone(audioState) {
+  const now = performance.now()
+  if (now - audioState.lastNote < 430) return
+  audioState.lastNote = now
+
+  const AudioContext = window.AudioContext || window.webkitAudioContext
+  if (!AudioContext) return
+
+  if (!audioState.context) {
+    audioState.context = new AudioContext()
+    audioState.delay = audioState.context.createDelay(1.2)
+    audioState.delay.delayTime.value = 0.22
+    audioState.feedback = audioState.context.createGain()
+    audioState.feedback.gain.value = 0.16
+    audioState.wet = audioState.context.createGain()
+    audioState.wet.gain.value = 0.028
+    audioState.delay.connect(audioState.feedback)
+    audioState.feedback.connect(audioState.delay)
+    audioState.delay.connect(audioState.wet)
+    audioState.wet.connect(audioState.context.destination)
+  }
+
+  const ctx = audioState.context
+  if (ctx.state === 'suspended') ctx.resume()
+
+  const notes = [392, 493.88, 587.33, 659.25, 783.99, 659.25, 587.33]
+  const frequency = notes[audioState.noteIndex % notes.length]
+  audioState.noteIndex += 1
+
+  const osc = ctx.createOscillator()
+  const shimmer = ctx.createOscillator()
+  const gain = ctx.createGain()
+  const shimmerGain = ctx.createGain()
+  const t = ctx.currentTime
+
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(frequency, t)
+  shimmer.type = 'triangle'
+  shimmer.frequency.setValueAtTime(frequency * 2.01, t)
+
+  gain.gain.setValueAtTime(0.0001, t)
+  gain.gain.exponentialRampToValueAtTime(0.026, t + 0.035)
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.05)
+  shimmerGain.gain.setValueAtTime(0.0001, t)
+  shimmerGain.gain.exponentialRampToValueAtTime(0.006, t + 0.05)
+  shimmerGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.7)
+
+  osc.connect(gain)
+  shimmer.connect(shimmerGain)
+  gain.connect(ctx.destination)
+  gain.connect(audioState.delay)
+  shimmerGain.connect(ctx.destination)
+  shimmerGain.connect(audioState.delay)
+
+  osc.start(t)
+  shimmer.start(t)
+  osc.stop(t + 1.1)
+  shimmer.stop(t + 0.75)
+}
+
+function ParticleTitle() {
+  const canvasRef = useRef(null)
+  const audioRef = useRef({ context: null, lastNote: 0, noteIndex: 0 })
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const context = canvas.getContext('2d', { alpha: true })
+    const particles = []
+    const pointer = { x: -9999, y: -9999, active: false }
+    let animationFrame = 0
+    let width = 0
+    let height = 0
+    let dpr = 1
+
+    const makeParticles = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const rect = canvas.getBoundingClientRect()
+      width = Math.max(320, rect.width)
+      height = Math.max(220, rect.height)
+      canvas.width = Math.floor(width * dpr)
+      canvas.height = Math.floor(height * dpr)
+      context.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+      const textCanvas = document.createElement('canvas')
+      const textContext = textCanvas.getContext('2d')
+      textCanvas.width = canvas.width
+      textCanvas.height = canvas.height
+      textContext.scale(dpr, dpr)
+      textContext.clearRect(0, 0, width, height)
+      textContext.textAlign = 'center'
+      textContext.textBaseline = 'middle'
+      textContext.font = `800 ${Math.min(width * 0.16, 124)}px Inter, Arial, sans-serif`
+      textContext.fillStyle = '#ffffff'
+      textContext.fillText('Terry Zhang', width / 2, height / 2)
+
+      const imageData = textContext.getImageData(0, 0, textCanvas.width, textCanvas.height).data
+      const nextParticles = []
+      const step = Math.max(5, Math.floor(width / 150))
+
+      for (let y = 0; y < textCanvas.height; y += step * dpr) {
+        for (let x = 0; x < textCanvas.width; x += step * dpr) {
+          const index = (y * textCanvas.width + x) * 4 + 3
+          if (imageData[index] > 80) {
+            const targetX = x / dpr
+            const targetY = y / dpr
+            nextParticles.push({
+              x: targetX + (Math.random() - 0.5) * 40,
+              y: targetY + (Math.random() - 0.5) * 40,
+              tx: targetX,
+              ty: targetY,
+              vx: 0,
+              vy: 0,
+              size: Math.random() * 1.3 + 0.8,
+              hue: Math.random() > 0.5 ? 316 : 272,
+              phase: Math.random() * Math.PI * 2,
+            })
+          }
+        }
+      }
+
+      particles.splice(0, particles.length, ...nextParticles)
+    }
+
+    const draw = () => {
+      context.clearRect(0, 0, width, height)
+      context.globalCompositeOperation = 'lighter'
+
+      particles.forEach((particle) => {
+        const dx = particle.x - pointer.x
+        const dy = particle.y - pointer.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        const repelRadius = pointer.active ? 118 : 0
+
+        if (distance < repelRadius) {
+          const force = (1 - distance / repelRadius) * 0.32
+          const angle = Math.atan2(dy, dx)
+          particle.vx += Math.cos(angle) * force
+          particle.vy += Math.sin(angle) * force
+        }
+
+        particle.vx += (particle.tx - particle.x) * 0.014
+        particle.vy += (particle.ty - particle.y) * 0.014
+        particle.vx *= 0.88
+        particle.vy *= 0.88
+        particle.x += particle.vx
+        particle.y += particle.vy
+
+        const twinkle = 0.58 + Math.sin(performance.now() * 0.0012 + particle.phase) * 0.26
+        context.fillStyle = `hsla(${particle.hue}, 100%, ${68 + twinkle * 18}%, ${0.58 + twinkle * 0.28})`
+        context.shadowColor = `hsla(${particle.hue}, 100%, 70%, 0.65)`
+        context.shadowBlur = 9
+        context.beginPath()
+        context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
+        context.fill()
+      })
+
+      animationFrame = requestAnimationFrame(draw)
+    }
+
+    const movePointer = (event) => {
+      const rect = canvas.getBoundingClientRect()
+      pointer.x = event.clientX - rect.left
+      pointer.y = event.clientY - rect.top
+      pointer.active = true
+      playMusicBoxTone(audioRef.current)
+    }
+
+    const leavePointer = () => {
+      pointer.active = false
+      pointer.x = -9999
+      pointer.y = -9999
+    }
+
+    makeParticles()
+    draw()
+    window.addEventListener('resize', makeParticles)
+    canvas.addEventListener('pointermove', movePointer)
+    canvas.addEventListener('pointerleave', leavePointer)
+
+    return () => {
+      cancelAnimationFrame(animationFrame)
+      window.removeEventListener('resize', makeParticles)
+      canvas.removeEventListener('pointermove', movePointer)
+      canvas.removeEventListener('pointerleave', leavePointer)
+    }
+  }, [])
+
+  return <canvas ref={canvasRef} className="particle-title" aria-label="Terry Zhang" />
+}
+
 function App() {
   return (
     <>
@@ -118,7 +310,8 @@ function App() {
         </a>
         <nav aria-label="Primary navigation">
           <a href="#projects">Projects</a>
-          <a href="#experience">Experience</a>
+          <a href="#experience">Industry Notes</a>
+          <a href="#wild">Wild</a>
           <a href="#education">Education</a>
           <a href="#contact">Contact</a>
         </nav>
@@ -126,13 +319,20 @@ function App() {
 
       <main id="top">
         <section className="hero">
-          <img src={asset('hero-robotics.png')} alt="" className="hero-image" />
-          <div className="hero-overlay" />
+          <div className="space-grid" aria-hidden="true" />
+          <div className="orbital orbital-one" aria-hidden="true" />
+          <div className="orbital orbital-two" aria-hidden="true" />
+          <div className="signal-line signal-one" aria-hidden="true" />
+          <div className="signal-line signal-two" aria-hidden="true" />
+          <div className="status-chip status-one">SYS · CALM</div>
+          <div className="status-chip status-two">AUDIO · HOVER</div>
+          <div className="status-chip status-three">DEPTH · 03</div>
           <div className="hero-content">
             <p className="eyebrow">Robotics · Autonomous Systems · ADAS</p>
-            <h1>Ruifang (Terry) Zhang</h1>
+            <h1 className="sr-only">Terry Zhang</h1>
+            <ParticleTitle />
             <p className="hero-copy">
-              Robotics M.Sc. student at TU Delft building and evaluating perception, planning, and control pipelines for practical engineering systems.
+              Robotics M.Sc. student at TU Delft building perception, planning, and control systems inside quiet digital space.
             </p>
             <div className="hero-actions">
               <a className="button primary" href="#projects">
@@ -185,17 +385,17 @@ function App() {
 
         <section className="section split-section" id="experience" aria-labelledby="experience-title">
           <div className="section-heading sticky-heading">
-            <p className="section-kicker">Industry</p>
-            <h2 id="experience-title">ADAS work experience</h2>
+            <p className="section-kicker">Industry Notes</p>
+            <h2 id="experience-title">Signals from the road</h2>
             <p>
-              Experience in sensing, perception, control, system integration, testing workflows, and validation metrics for real-world driving systems.
+              Two chapters from real-world ADAS work: sensing, perception, control, integration, vehicle testing, and validation workflows.
             </p>
           </div>
           <div className="timeline">
             {experience.map((item) => (
               <article className="timeline-item" key={item.company}>
                 <div className="timeline-icon" aria-hidden="true"><BriefcaseBusiness size={18} /></div>
-                <div>
+                <div className="timeline-copy">
                   <h3>{item.role}</h3>
                   <p className="meta">{item.company} · {item.location}</p>
                   <p className="date">{item.date}</p>
@@ -205,6 +405,30 @@ function App() {
                     ))}
                   </ul>
                 </div>
+                <div className="experience-photo-slot" aria-label={`Photo placeholder for ${item.company}`}>
+                  <Camera size={22} />
+                  <span>Photo space</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section wild-section" id="wild" aria-labelledby="wild-title">
+          <div className="section-heading">
+            <p className="section-kicker">Personal Atlas</p>
+            <h2 id="wild-title">Winds of the Wild</h2>
+            <p>
+              A future gallery for trails, cities, coastlines, and quiet travel moments. The layout is ready for photos and short field notes.
+            </p>
+          </div>
+          <div className="wild-grid">
+            {['High Trails', 'Open Water', 'Night Cities'].map((label, index) => (
+              <article className="wild-card" key={label}>
+                <Compass size={24} aria-hidden="true" />
+                <span>Slot 0{index + 1}</span>
+                <h3>{label}</h3>
+                <p>Photo and story coming soon.</p>
               </article>
             ))}
           </div>
@@ -247,6 +471,7 @@ function App() {
         </section>
 
         <section className="contact-band" id="contact" aria-labelledby="contact-title">
+          <Sparkles className="contact-spark" size={28} aria-hidden="true" />
           <div>
             <p className="section-kicker">Contact</p>
             <h2 id="contact-title">Open to robotics, autonomy, and industrial automation opportunities.</h2>
