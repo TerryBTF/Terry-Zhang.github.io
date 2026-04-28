@@ -116,6 +116,15 @@ const hobbies = [
   ['Piano', 'Band keyboard player and quiet practice hours.'],
 ]
 
+function SectionTitle({ eyebrow, title, id }) {
+  return (
+    <>
+      <p className="section-kicker">{eyebrow}</p>
+      <h2 id={id}>{title}</h2>
+    </>
+  )
+}
+
 function ParticleTitle() {
   const canvasRef = useRef(null)
 
@@ -291,20 +300,25 @@ function EducationGlobe() {
   return (
     <div className="education-globe" aria-label="Animated education path from Taiwan to London to Delft">
       <div className="globe-sphere">
-        <div className="map-continent asia" />
-        <div className="map-continent europe" />
-        <div className="map-continent africa" />
+        <svg className="continent-map" viewBox="0 0 420 420" aria-hidden="true">
+          <path className="continent north-america" d="M62 126 C90 91 143 86 168 116 C184 136 164 158 141 164 C115 171 108 197 82 190 C55 182 38 151 62 126 Z" />
+          <path className="continent south-america" d="M153 216 C178 226 186 260 176 292 C167 324 143 354 126 340 C111 328 123 293 113 267 C104 241 122 210 153 216 Z" />
+          <path className="continent europe" d="M197 116 C223 99 254 103 264 126 C273 145 249 158 224 152 C202 147 178 139 197 116 Z" />
+          <path className="continent africa" d="M226 170 C260 175 279 211 271 252 C264 292 235 318 212 292 C190 266 194 220 202 190 C205 178 213 171 226 170 Z" />
+          <path className="continent asia" d="M269 124 C318 104 367 128 375 166 C383 203 342 214 322 195 C302 177 283 189 265 171 C247 154 247 134 269 124 Z" />
+          <path className="continent australia" d="M319 279 C345 267 374 277 383 299 C368 319 330 318 310 302 C303 294 307 284 319 279 Z" />
+        </svg>
         <div className="globe-lat lat-one" />
         <div className="globe-lat lat-two" />
         <div className="globe-lat lat-three" />
         <div className="globe-meridian meridian-one" />
         <div className="globe-meridian meridian-two" />
         <svg className="route-map" viewBox="0 0 420 420" role="img" aria-hidden="true">
-          <path className="route-path route-tw-ucl" d="M286 238 C222 195 168 146 122 118" />
-          <path className="route-path route-ucl-tu" d="M122 118 C144 100 167 94 192 91" />
-          <circle className="route-dot dot-tw" cx="286" cy="238" r="5" />
-          <circle className="route-dot dot-ucl" cx="122" cy="118" r="5" />
-          <circle className="route-dot dot-tu" cx="192" cy="91" r="5" />
+          <path className="route-path route-tw-ucl" d="M332 188 C296 144 255 115 226 122" />
+          <path className="route-path route-ucl-tu" d="M226 122 C232 113 240 109 247 112" />
+          <circle className="route-dot dot-tw" cx="332" cy="188" r="5" />
+          <circle className="route-dot dot-ucl" cx="226" cy="122" r="5" />
+          <circle className="route-dot dot-tu" cx="247" cy="112" r="5" />
         </svg>
       </div>
       <div className="geo-label label-taiwan">Taiwan</div>
@@ -356,7 +370,7 @@ function App() {
 
         <section className="section" id="projects" aria-labelledby="projects-title">
           <div className="section-heading">
-            <p className="section-kicker" id="projects-title">Projects: Prototypes on the Trail</p>
+            <SectionTitle eyebrow="Projects" title="Prototypes on the Trail" id="projects-title" />
           </div>
           <div className="project-grid">
             {projects.map((project) => {
@@ -383,8 +397,7 @@ function App() {
 
         <section className="section split-section" id="experience" aria-labelledby="experience-title">
           <div className="section-heading sticky-heading">
-            <p className="section-kicker">Industry Notes</p>
-            <h2 id="experience-title">Signals from the road</h2>
+            <SectionTitle eyebrow="Industry Notes" title="Signals from the road" id="experience-title" />
             <p>
               Two chapters from real-world ADAS work: sensing, perception, control, integration, vehicle testing, and validation workflows.
             </p>
@@ -415,7 +428,7 @@ function App() {
         <section className="section education-section" id="education" aria-labelledby="education-title">
           <div>
             <div className="section-heading">
-              <p className="section-kicker" id="education-title">Education: Coordinates of the Compass</p>
+              <SectionTitle eyebrow="Education" title="Coordinates of the Compass" id="education-title" />
             </div>
             <div className="education-list">
               {education.map((item) => (
@@ -437,7 +450,7 @@ function App() {
 
         <section className="section skills-section" id="skills" aria-labelledby="skills-title">
           <div className="section-heading">
-            <p className="section-kicker" id="skills-title">Skills: The Gear in the Pack</p>
+            <SectionTitle eyebrow="Skills" title="The Gear in the Pack" id="skills-title" />
           </div>
           <div className="skill-list">
             {skills.map(([label, value]) => (
@@ -451,7 +464,7 @@ function App() {
 
         <section className="section wild-section" id="wild" aria-labelledby="wild-title">
           <div className="section-heading">
-            <p className="section-kicker" id="wild-title">Travel: Wind of the Wild</p>
+            <SectionTitle eyebrow="Travel" title="Wind of the Wild" id="wild-title" />
             <p>
               A future gallery for trails, cities, coastlines, and quiet travel moments. The layout is ready for photos and short field notes.
             </p>
@@ -470,7 +483,7 @@ function App() {
 
         <section className="section hobbies-section" id="hobbies" aria-labelledby="hobbies-title">
           <div className="section-heading">
-            <p className="section-kicker" id="hobbies-title">Hobbies: Echoes from the Valley</p>
+            <SectionTitle eyebrow="Hobbies" title="Echoes from the Valley" id="hobbies-title" />
           </div>
           <div className="hobby-grid">
             {hobbies.map(([title, description]) => (
@@ -485,7 +498,7 @@ function App() {
         <section className="contact-band" id="contact" aria-labelledby="contact-title">
           <Sparkles className="contact-spark" size={28} aria-hidden="true" />
           <div>
-            <p className="section-kicker" id="contact-title">Contact: Ping the Station</p>
+            <SectionTitle eyebrow="Contact" title="Ping the Station" id="contact-title" />
           </div>
           <div className="contact-links">
             <a href="mailto:zhangruifang0913@outlook.com"><Mail size={18} /> Email</a>
