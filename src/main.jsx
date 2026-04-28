@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
-  ArrowUpRight,
   BrainCircuit,
   BriefcaseBusiness,
   Camera,
@@ -19,7 +18,7 @@ import './styles.css'
 const projects = [
   {
     title: 'Radar-Camera 3D Object Detection',
-    meta: 'TU Delft · Mar 2026',
+    meta: 'TU Delft / Mar 2026',
     tag: 'Multimodal Perception',
     icon: Radar,
     summary:
@@ -31,7 +30,7 @@ const projects = [
   },
   {
     title: 'Carry-No-Spill',
-    meta: 'TU Delft · Mar 2026',
+    meta: 'TU Delft / Mar 2026',
     tag: 'Shared-Control HRI',
     icon: BrainCircuit,
     summary:
@@ -43,7 +42,7 @@ const projects = [
   },
   {
     title: 'Hierarchical Planning for Mobile Manipulation',
-    meta: 'TU Delft · Jan 2026',
+    meta: 'TU Delft / Jan 2026',
     tag: 'Planning & Control',
     icon: Route,
     summary:
@@ -83,22 +82,22 @@ const experience = [
 const education = [
   {
     school: 'Delft University of Technology',
-    logo: 'TU',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/1/1b/Zegel_Technische_Universiteit_Delft.svg',
     degree: 'M.Sc. in Robotics',
     location: 'Delft, Netherlands',
     date: 'Sep 2025 - Present',
   },
   {
     school: 'University College London',
-    logo: 'UCL',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/c/c2/UCL_Logo%2C_plain_background.svg',
     degree: 'M.Sc. in Engineering with Entrepreneurship & Innovation',
     location: 'London, UK',
     date: 'Sep 2017 - Sep 2018',
   },
   {
     school: 'Yuan-Ze University',
-    logo: 'YZU',
-    degree: 'B.Sc. in Mechanical Engineering · GPA 3.58/4.0 · Top 12%',
+    logo: 'https://www.yzu.edu.tw/templates/yzu_2016_v2/ui/logo-sm.png',
+    degree: 'B.Sc. in Mechanical Engineering / GPA 3.58/4.0 / Top 12%',
     location: 'Taoyuan, Taiwan',
     date: 'Sep 2013 - Jun 2017',
   },
@@ -117,8 +116,6 @@ const hobbies = [
   ['Piano', 'Band keyboard player and quiet practice hours.'],
 ]
 
-const asset = (path) => `${import.meta.env.BASE_URL}${path}`
-
 function ParticleTitle() {
   const canvasRef = useRef(null)
 
@@ -131,6 +128,7 @@ function ParticleTitle() {
     let width = 0
     let height = 0
     let dpr = 1
+    let disposed = false
 
     const makeParticles = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -149,33 +147,40 @@ function ParticleTitle() {
       textContext.clearRect(0, 0, width, height)
       textContext.textAlign = 'center'
       textContext.textBaseline = 'middle'
-      let fontSize = Math.min(width * 0.22, 168)
-      textContext.font = `900 ${fontSize}px Arial Black, Inter, Arial, sans-serif`
-      while (textContext.measureText('Terry Zhang').width > width * 0.92 && fontSize > 42) {
+      const lines = ['Terry', 'Zhang']
+      let fontSize = Math.min(width * 0.22, 154)
+      textContext.font = `900 ${fontSize}px Arial Black, Arial, sans-serif`
+      while (Math.max(...lines.map((line) => textContext.measureText(line).width)) > width * 0.62 && fontSize > 42) {
         fontSize -= 4
-        textContext.font = `900 ${fontSize}px Arial Black, Inter, Arial, sans-serif`
+        textContext.font = `900 ${fontSize}px Arial Black, Arial, sans-serif`
       }
       textContext.fillStyle = '#ffffff'
-      textContext.fillText('Terry Zhang', width / 2, height / 2 + fontSize * 0.02)
+      textContext.strokeStyle = '#ffffff'
+      textContext.lineWidth = Math.max(5, fontSize * 0.08)
+      textContext.lineJoin = 'round'
+      textContext.shadowColor = '#ffffff'
+      textContext.shadowBlur = 2
+      textContext.strokeText(lines[0], width / 2, height / 2 - fontSize * 0.43)
+      textContext.strokeText(lines[1], width / 2, height / 2 + fontSize * 0.58)
 
       const imageData = textContext.getImageData(0, 0, textCanvas.width, textCanvas.height).data
       const nextParticles = []
-      const step = Math.max(3, Math.floor(width / 240))
+      const step = Math.max(2, Math.floor(width / 330))
 
       for (let y = 0; y < textCanvas.height; y += step * dpr) {
         for (let x = 0; x < textCanvas.width; x += step * dpr) {
           const index = (y * textCanvas.width + x) * 4 + 3
           if (imageData[index] > 80) {
-            const targetX = x / dpr
-            const targetY = y / dpr
+            const targetX = x / dpr + (Math.random() - 0.5) * step * 0.7
+            const targetY = y / dpr + (Math.random() - 0.5) * step * 0.7
             nextParticles.push({
-              x: targetX + (Math.random() - 0.5) * 40,
-              y: targetY + (Math.random() - 0.5) * 40,
+              x: targetX + (Math.random() - 0.5) * 4,
+              y: targetY + (Math.random() - 0.5) * 4,
               tx: targetX,
               ty: targetY,
               vx: 0,
               vy: 0,
-              size: Math.random() * 1.1 + 1.05,
+              size: Math.random() * 0.75 + 0.7,
               hue: Math.random() > 0.5 ? 316 : 272,
               phase: Math.random() * Math.PI * 2,
             })
@@ -189,37 +194,32 @@ function ParticleTitle() {
     const draw = () => {
       context.clearRect(0, 0, width, height)
       context.globalCompositeOperation = 'source-over'
-      context.font = `900 ${Math.min(width * 0.22, 168)}px Arial Black, Inter, Arial, sans-serif`
-      context.textAlign = 'center'
-      context.textBaseline = 'middle'
-      context.fillStyle = 'rgba(255, 255, 255, 0.035)'
-      context.fillText('Terry Zhang', width / 2, height / 2)
       context.globalCompositeOperation = 'lighter'
 
       particles.forEach((particle) => {
         const dx = particle.x - pointer.x
         const dy = particle.y - pointer.y
         const distance = Math.sqrt(dx * dx + dy * dy)
-        const repelRadius = pointer.active ? 118 : 0
+        const repelRadius = pointer.active ? Math.min(150, width * 0.16) : 0
 
         if (distance < repelRadius) {
-          const force = (1 - distance / repelRadius) * 0.32
+          const force = (1 - distance / repelRadius) * 0.34
           const angle = Math.atan2(dy, dx)
           particle.vx += Math.cos(angle) * force
           particle.vy += Math.sin(angle) * force
         }
 
-        particle.vx += (particle.tx - particle.x) * 0.014
-        particle.vy += (particle.ty - particle.y) * 0.014
-        particle.vx *= 0.88
-        particle.vy *= 0.88
+        particle.vx += (particle.tx - particle.x) * 0.026
+        particle.vy += (particle.ty - particle.y) * 0.026
+        particle.vx *= 0.86
+        particle.vy *= 0.86
         particle.x += particle.vx
         particle.y += particle.vy
 
         const twinkle = 0.58 + Math.sin(performance.now() * 0.0012 + particle.phase) * 0.26
         context.fillStyle = `hsla(${particle.hue}, 100%, ${68 + twinkle * 18}%, ${0.58 + twinkle * 0.28})`
         context.shadowColor = `hsla(${particle.hue}, 100%, 70%, 0.65)`
-        context.shadowBlur = 9
+        context.shadowBlur = 4
         context.beginPath()
         context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
         context.fill()
@@ -242,12 +242,18 @@ function ParticleTitle() {
     }
 
     makeParticles()
+    document.fonts?.ready.then(() => {
+      if (!disposed) {
+        makeParticles()
+      }
+    })
     draw()
     window.addEventListener('resize', makeParticles)
     canvas.addEventListener('pointermove', movePointer)
     canvas.addEventListener('pointerleave', leavePointer)
 
     return () => {
+      disposed = true
       cancelAnimationFrame(animationFrame)
       window.removeEventListener('resize', makeParticles)
       canvas.removeEventListener('pointermove', movePointer)
@@ -255,13 +261,24 @@ function ParticleTitle() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="particle-title" aria-label="Terry Zhang" />
+  return (
+    <div className="particle-title" aria-label="Terry Zhang">
+      <canvas ref={canvasRef} className="particle-field" aria-hidden="true" />
+      <div className="particle-word" aria-hidden="true">
+        <span>Terry</span>
+        <span>Zhang</span>
+      </div>
+    </div>
+  )
 }
 
 function EducationGlobe() {
   return (
     <div className="education-globe" aria-label="Animated education path from Taiwan to London to Delft">
       <div className="globe-sphere">
+        <div className="map-continent asia" />
+        <div className="map-continent europe" />
+        <div className="map-continent africa" />
         <div className="globe-lat lat-one" />
         <div className="globe-lat lat-two" />
         <div className="globe-lat lat-three" />
@@ -275,14 +292,17 @@ function EducationGlobe() {
           <circle className="route-dot dot-tu" cx="192" cy="91" r="5" />
         </svg>
       </div>
+      <div className="geo-label label-taiwan">Taiwan</div>
+      <div className="geo-label label-england">England</div>
+      <div className="geo-label label-netherlands">Netherlands</div>
       <div className="campus-pin pin-yzu">
         <span>Yuan-Ze University</span>
       </div>
       <div className="campus-pin pin-ucl">
-        <span>UCL</span>
+        <span>University College London</span>
       </div>
       <div className="campus-pin pin-tu">
-        <span>TU Delft</span>
+        <span>Delft University of Technology</span>
       </div>
     </div>
   )
@@ -314,32 +334,14 @@ function App() {
             <h1 className="sr-only">Terry Zhang</h1>
             <ParticleTitle />
             <p className="hero-copy">
-              Robotics M.Sc. student at TU Delft building perception, planning, and control systems inside quiet digital space.
+              On long-distance trails, I am accustomed to measuring the vastness of nature with my footsteps; in my career, I have dedicated myself to deciphering the intricate system logic behind the road. From the Porsche China R&D Satellite in Shanghai to the robotics labs at Delft University of Technology, my drive has always been fueled by a quest for the essence of "intelligent machines". By combining a system-level perspective forged in the ADAS industry with my current deep dive into perception and motion planning algorithms, I am exploring how to make robots integrate more seamlessly and naturally into human environments. I am a proactive achiever: rather than waiting for opportunities, I prefer to define my goals and dedicate relentless effort to realizing them. I believe that the most elegant code, much like the most breathtaking scenery, is only reached through full commitment.
             </p>
-            <div className="hero-actions">
-              <a className="button primary" href="#projects">
-                View Projects <ArrowUpRight size={18} />
-              </a>
-              <a className="button secondary" href={asset('Terry-Zhang-CV.pdf')} target="_blank" rel="noreferrer">
-                Download CV <ArrowUpRight size={18} />
-              </a>
-            </div>
           </div>
-        </section>
-
-        <section className="section intro" aria-labelledby="profile-title">
-          <div>
-            <p className="section-kicker">Who I Am</p>
-            <h2 id="profile-title">System-level robotics engineer with ADAS validation experience.</h2>
-          </div>
-          <p>
-            My work connects robotics research with production engineering: multimodal perception, motion planning, shared-control simulation, vehicle testing, data collection, and performance validation. I am especially interested in applying robotics and automation to real industrial environments.
-          </p>
         </section>
 
         <section className="section" id="projects" aria-labelledby="projects-title">
           <div className="section-heading">
-            <h2 id="projects-title">Projects: Prototypes on the Trail</h2>
+            <p className="section-kicker" id="projects-title">Projects: Prototypes on the Trail</p>
           </div>
           <div className="project-grid">
             {projects.map((project) => {
@@ -378,7 +380,7 @@ function App() {
                 <div className="timeline-icon" aria-hidden="true"><BriefcaseBusiness size={18} /></div>
                 <div className="timeline-copy">
                   <h3>{item.role}</h3>
-                  <p className="meta">{item.company} · {item.location}</p>
+                  <p className="meta">{item.company} / {item.location}</p>
                   <p className="date">{item.date}</p>
                   <ul>
                     {item.points.map((point) => (
@@ -398,16 +400,18 @@ function App() {
         <section className="section education-section" id="education" aria-labelledby="education-title">
           <div>
             <div className="section-heading">
-              <h2 id="education-title">Education: Coordinates of the Compass</h2>
+              <p className="section-kicker" id="education-title">Education: Coordinates of the Compass</p>
             </div>
             <div className="education-list">
               {education.map((item) => (
                 <article className="education-item" key={item.school}>
-                  <span className="school-logo" aria-hidden="true">{item.logo}</span>
+                  <span className="school-logo" aria-hidden="true">
+                    <img src={item.logo} alt="" loading="lazy" />
+                  </span>
                   <div>
                     <h3>{item.school}</h3>
                     <p>{item.degree}</p>
-                    <p className="meta">{item.location} · {item.date}</p>
+                    <p className="meta">{item.location} / {item.date}</p>
                   </div>
                 </article>
               ))}
@@ -418,7 +422,7 @@ function App() {
 
         <section className="section skills-section" id="skills" aria-labelledby="skills-title">
           <div className="section-heading">
-            <h2 id="skills-title">Skills: The Gear in the Pack</h2>
+            <p className="section-kicker" id="skills-title">Skills: The Gear in the Pack</p>
           </div>
           <div className="skill-list">
             {skills.map(([label, value]) => (
@@ -432,7 +436,7 @@ function App() {
 
         <section className="section wild-section" id="wild" aria-labelledby="wild-title">
           <div className="section-heading">
-            <h2 id="wild-title">Travel: Wind of the Wild</h2>
+            <p className="section-kicker" id="wild-title">Travel: Wind of the Wild</p>
             <p>
               A future gallery for trails, cities, coastlines, and quiet travel moments. The layout is ready for photos and short field notes.
             </p>
@@ -451,7 +455,7 @@ function App() {
 
         <section className="section hobbies-section" id="hobbies" aria-labelledby="hobbies-title">
           <div className="section-heading">
-            <h2 id="hobbies-title">Hobbies: Echoes from the Valley</h2>
+            <p className="section-kicker" id="hobbies-title">Hobbies: Echoes from the Valley</p>
           </div>
           <div className="hobby-grid">
             {hobbies.map(([title, description]) => (
@@ -466,7 +470,7 @@ function App() {
         <section className="contact-band" id="contact" aria-labelledby="contact-title">
           <Sparkles className="contact-spark" size={28} aria-hidden="true" />
           <div>
-            <h2 id="contact-title">Contact: Ping the Station</h2>
+            <p className="section-kicker" id="contact-title">Contact: Ping the Station</p>
           </div>
           <div className="contact-links">
             <a href="mailto:zhangruifang0913@outlook.com"><Mail size={18} /> Email</a>
