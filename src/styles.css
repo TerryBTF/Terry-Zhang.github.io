@@ -251,7 +251,7 @@ nav a:hover {
   display: block;
   height: 100%;
   inset: 0;
-  opacity: 0.2;
+  opacity: 1;
   position: absolute;
   touch-action: none;
   width: 100%;
@@ -275,6 +275,7 @@ nav a:hover {
 }
 
 .particle-word span {
+  animation: particleShimmer 12s ease-in-out infinite;
   background:
     radial-gradient(circle, rgba(255, 255, 255, 0.98) 0 1px, transparent 1.65px),
     radial-gradient(circle, rgba(255, 93, 215, 0.9) 0 1px, transparent 1.8px),
@@ -285,10 +286,17 @@ nav a:hover {
   color: transparent;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  transition: filter 700ms ease, opacity 700ms ease, transform 900ms ease;
 }
 
 .particle-word span:last-child {
   animation-delay: -2.5s;
+}
+
+.particle-title:hover .particle-word span {
+  filter: blur(0.45px) drop-shadow(0 0 18px rgba(255, 93, 215, 0.28));
+  opacity: 0.82;
+  transform: translate3d(0, -2px, 0);
 }
 
 .eyebrow,
@@ -790,13 +798,7 @@ li + li {
 }
 
 .campus-pin::after {
-  background: linear-gradient(180deg, rgba(255, 93, 215, 0.82), transparent);
-  bottom: -42px;
-  content: "";
-  height: 42px;
-  left: 50%;
-  position: absolute;
-  width: 1px;
+  display: none;
 }
 
 .contact-band {
@@ -979,8 +981,7 @@ li + li {
   .orbital,
   .signal-line,
   .hero::before,
-  .hero::after,
-  .particle-field {
+  .hero::after {
     display: none;
   }
 

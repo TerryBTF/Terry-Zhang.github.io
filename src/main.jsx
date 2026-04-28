@@ -174,6 +174,8 @@ const educationStops = [
     region: 'Taiwan',
     lon: 121.26,
     lat: 24.97,
+    pinOffset: { x: 92, y: -16 },
+    regionOffset: { x: 54, y: 24 },
   },
   {
     key: 'ucl',
@@ -181,6 +183,8 @@ const educationStops = [
     region: 'England',
     lon: -0.13,
     lat: 51.52,
+    pinOffset: { x: -38, y: 38 },
+    regionOffset: { x: -18, y: 66 },
   },
   {
     key: 'tu',
@@ -188,6 +192,8 @@ const educationStops = [
     region: 'Netherlands',
     lon: 4.37,
     lat: 52.0,
+    pinOffset: { x: 112, y: -24 },
+    regionOffset: { x: 44, y: -42 },
   },
 ]
 
@@ -346,18 +352,13 @@ function ParticleTitle() {
         textContext.font = `900 ${fontSize}px Arial Black, Arial, sans-serif`
       }
       textContext.fillStyle = '#ffffff'
-      textContext.strokeStyle = '#ffffff'
-      textContext.lineWidth = Math.max(5, fontSize * 0.08)
-      textContext.lineJoin = 'round'
-      textContext.shadowColor = '#ffffff'
-      textContext.shadowBlur = 2
-      textContext.strokeText(lines[0], width / 2, height / 2 - fontSize * 0.43)
-      textContext.strokeText(lines[1], width / 2, height / 2 + fontSize * 0.58)
+      textContext.fillText(lines[0], width / 2, height / 2 - fontSize * 0.43)
+      textContext.fillText(lines[1], width / 2, height / 2 + fontSize * 0.58)
 
       const imageData = textContext.getImageData(0, 0, textCanvas.width, textCanvas.height).data
       const nextParticles = []
-      const step = width < 700 ? 8 : 6
-      const maxParticles = width < 700 ? 360 : 760
+      const step = 3
+      const maxParticles = width < 700 ? 5200 : 9500
 
       for (let y = 0; y < textCanvas.height; y += step * dpr) {
         for (let x = 0; x < textCanvas.width; x += step * dpr) {
@@ -372,7 +373,7 @@ function ParticleTitle() {
               ty: targetY,
               vx: 0,
               vy: 0,
-              size: Math.random() * 0.7 + 0.65,
+              size: Math.random() * 0.5 + 1.05,
               hue: Math.random() > 0.5 ? 316 : 272,
             })
           }
@@ -421,10 +422,8 @@ function ParticleTitle() {
         particle.x += particle.vx
         particle.y += particle.vy
 
-        context.fillStyle = `hsla(${particle.hue}, 100%, 78%, 0.7)`
-        context.beginPath()
-        context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-        context.fill()
+        context.fillStyle = `hsla(${particle.hue}, 100%, 78%, 0.92)`
+        context.fillRect(particle.x, particle.y, particle.size, particle.size)
       })
 
       if (!reducedMotion) {
@@ -560,13 +559,19 @@ function EducationGlobe() {
           <React.Fragment key={stop.key}>
             <div
               className="geo-label"
-              style={{ left: `${(stop.point.x / 420) * 100}%`, top: `${(stop.point.y / 420) * 100 + 6}%` }}
+              style={{
+                left: `calc(${(stop.point.x / 420) * 100}% + ${stop.regionOffset.x}px)`,
+                top: `calc(${(stop.point.y / 420) * 100}% + ${stop.regionOffset.y}px)`,
+              }}
             >
               {stop.region}
             </div>
             <div
               className="campus-pin"
-              style={{ left: `${(stop.point.x / 420) * 100}%`, top: `${(stop.point.y / 420) * 100 - 8}%` }}
+              style={{
+                left: `calc(${(stop.point.x / 420) * 100}% + ${stop.pinOffset.x}px)`,
+                top: `calc(${(stop.point.y / 420) * 100}% + ${stop.pinOffset.y}px)`,
+              }}
             >
               <span>{stop.label}</span>
             </div>
