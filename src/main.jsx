@@ -6,7 +6,6 @@ import {
   BriefcaseBusiness,
   Camera,
   Compass,
-  GraduationCap,
   Mail,
   MapPin,
   Navigation,
@@ -84,18 +83,21 @@ const experience = [
 const education = [
   {
     school: 'Delft University of Technology',
+    logo: 'TU',
     degree: 'M.Sc. in Robotics',
     location: 'Delft, Netherlands',
     date: 'Sep 2025 - Present',
   },
   {
     school: 'University College London',
+    logo: 'UCL',
     degree: 'M.Sc. in Engineering with Entrepreneurship & Innovation',
     location: 'London, UK',
     date: 'Sep 2017 - Sep 2018',
   },
   {
     school: 'Yuan-Ze University',
+    logo: 'YZU',
     degree: 'B.Sc. in Mechanical Engineering · GPA 3.58/4.0 · Top 12%',
     location: 'Taoyuan, Taiwan',
     date: 'Sep 2013 - Jun 2017',
@@ -202,9 +204,14 @@ function ParticleTitle() {
       textContext.clearRect(0, 0, width, height)
       textContext.textAlign = 'center'
       textContext.textBaseline = 'middle'
-      textContext.font = `800 ${Math.min(width * 0.16, 124)}px Inter, Arial, sans-serif`
+      let fontSize = Math.min(width * 0.18, 142)
+      textContext.font = `800 ${fontSize}px Inter, Arial, sans-serif`
+      while (textContext.measureText('Terry Zhang').width > width * 0.92 && fontSize > 42) {
+        fontSize -= 4
+        textContext.font = `800 ${fontSize}px Inter, Arial, sans-serif`
+      }
       textContext.fillStyle = '#ffffff'
-      textContext.fillText('Terry Zhang', width / 2, height / 2)
+      textContext.fillText('Terry Zhang', width / 2, height / 2 + fontSize * 0.02)
 
       const imageData = textContext.getImageData(0, 0, textCanvas.width, textCanvas.height).data
       const nextParticles = []
@@ -305,14 +312,11 @@ function App() {
   return (
     <>
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="Back to top">
-          TZ
-        </a>
         <nav aria-label="Primary navigation">
           <a href="#projects">Projects</a>
           <a href="#experience">Industry Notes</a>
-          <a href="#wild">Wild</a>
           <a href="#education">Education</a>
+          <a href="#wild">Wild</a>
           <a href="#contact">Contact</a>
         </nav>
       </header>
@@ -324,11 +328,7 @@ function App() {
           <div className="orbital orbital-two" aria-hidden="true" />
           <div className="signal-line signal-one" aria-hidden="true" />
           <div className="signal-line signal-two" aria-hidden="true" />
-          <div className="status-chip status-one">SYS · CALM</div>
-          <div className="status-chip status-two">AUDIO · HOVER</div>
-          <div className="status-chip status-three">DEPTH · 03</div>
           <div className="hero-content">
-            <p className="eyebrow">Robotics · Autonomous Systems · ADAS</p>
             <h1 className="sr-only">Terry Zhang</h1>
             <ParticleTitle />
             <p className="hero-copy">
@@ -347,7 +347,7 @@ function App() {
 
         <section className="section intro" aria-labelledby="profile-title">
           <div>
-            <p className="section-kicker">Profile</p>
+            <p className="section-kicker">Who I Am</p>
             <h2 id="profile-title">System-level robotics engineer with ADAS validation experience.</h2>
           </div>
           <p>
@@ -357,8 +357,8 @@ function App() {
 
         <section className="section" id="projects" aria-labelledby="projects-title">
           <div className="section-heading">
-            <p className="section-kicker">Selected Work</p>
-            <h2 id="projects-title">Academic and robotics projects</h2>
+            <p className="section-kicker">Build Log</p>
+            <h2 id="projects-title">Robotics Projects</h2>
           </div>
           <div className="project-grid">
             {projects.map((project) => {
@@ -414,26 +414,6 @@ function App() {
           </div>
         </section>
 
-        <section className="section wild-section" id="wild" aria-labelledby="wild-title">
-          <div className="section-heading">
-            <p className="section-kicker">Personal Atlas</p>
-            <h2 id="wild-title">Winds of the Wild</h2>
-            <p>
-              A future gallery for trails, cities, coastlines, and quiet travel moments. The layout is ready for photos and short field notes.
-            </p>
-          </div>
-          <div className="wild-grid">
-            {['High Trails', 'Open Water', 'Night Cities'].map((label, index) => (
-              <article className="wild-card" key={label}>
-                <Compass size={24} aria-hidden="true" />
-                <span>Slot 0{index + 1}</span>
-                <h3>{label}</h3>
-                <p>Photo and story coming soon.</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
         <section className="section education-skills" id="education" aria-labelledby="education-title">
           <div>
             <div className="section-heading">
@@ -443,7 +423,7 @@ function App() {
             <div className="education-list">
               {education.map((item) => (
                 <article className="education-item" key={item.school}>
-                  <GraduationCap size={20} aria-hidden="true" />
+                  <span className="school-logo" aria-hidden="true">{item.logo}</span>
                   <div>
                     <h3>{item.school}</h3>
                     <p>{item.degree}</p>
@@ -470,11 +450,31 @@ function App() {
           </div>
         </section>
 
+        <section className="section wild-section" id="wild" aria-labelledby="wild-title">
+          <div className="section-heading">
+            <p className="section-kicker">Personal Atlas</p>
+            <h2 id="wild-title">Winds of the Wild</h2>
+            <p>
+              A future gallery for trails, cities, coastlines, and quiet travel moments. The layout is ready for photos and short field notes.
+            </p>
+          </div>
+          <div className="wild-grid">
+            {['High Trails', 'Open Water', 'Night Cities'].map((label, index) => (
+              <article className="wild-card" key={label}>
+                <Compass size={24} aria-hidden="true" />
+                <span>Slot 0{index + 1}</span>
+                <h3>{label}</h3>
+                <p>Photo and story coming soon.</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="contact-band" id="contact" aria-labelledby="contact-title">
           <Sparkles className="contact-spark" size={28} aria-hidden="true" />
           <div>
             <p className="section-kicker">Contact</p>
-            <h2 id="contact-title">Open to robotics, autonomy, and industrial automation opportunities.</h2>
+            <h2 id="contact-title">Say hello.</h2>
           </div>
           <div className="contact-links">
             <a href="mailto:zhangruifang0913@outlook.com"><Mail size={18} /> Email</a>
