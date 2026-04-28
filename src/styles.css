@@ -314,7 +314,8 @@ p {
 .project-card,
 .education-item,
 .skill-row,
-.wild-card {
+.wild-card,
+.hobby-card {
   background:
     linear-gradient(145deg, rgba(255, 93, 215, 0.08), transparent 44%),
     var(--paper);
@@ -468,16 +469,43 @@ li + li {
   text-transform: uppercase;
 }
 
-.education-skills {
+.hobbies-section {
+  background: rgba(11, 6, 18, 0.78);
+  border-top: 1px solid rgba(255, 93, 215, 0.14);
+}
+
+.hobby-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hobby-card {
+  min-height: 170px;
+  padding: 24px;
+}
+
+.education-section {
+  align-items: center;
   display: grid;
   gap: 56px;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.82fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1fr);
 }
 
 .education-list,
 .skill-list {
   display: grid;
   gap: 14px;
+}
+
+.skills-section {
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 93, 215, 0.12), transparent 28%),
+    rgba(10, 5, 18, 0.68);
+}
+
+.skill-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .education-item,
@@ -525,6 +553,174 @@ li + li {
 .skill-row strong {
   color: var(--ink);
   font-size: 1.02rem;
+}
+
+.education-globe {
+  aspect-ratio: 1 / 1;
+  justify-self: center;
+  max-width: 520px;
+  position: relative;
+  width: min(100%, 520px);
+}
+
+.globe-sphere {
+  animation: globePulse 8s ease-in-out infinite;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.16), transparent 16%),
+    radial-gradient(circle at 50% 50%, rgba(104, 246, 255, 0.16), rgba(139, 92, 255, 0.08) 46%, rgba(255, 93, 215, 0.08) 68%, rgba(7, 4, 12, 0.82) 69%);
+  border: 1px solid rgba(104, 246, 255, 0.28);
+  border-radius: 50%;
+  box-shadow:
+    inset -36px -22px 70px rgba(0, 0, 0, 0.46),
+    inset 18px 18px 58px rgba(255, 255, 255, 0.08),
+    0 0 58px rgba(196, 76, 255, 0.28);
+  inset: 7%;
+  overflow: hidden;
+  position: absolute;
+}
+
+.globe-sphere::before {
+  animation: globeScan 16s linear infinite;
+  background:
+    linear-gradient(90deg, transparent 48%, rgba(104, 246, 255, 0.12) 50%, transparent 52%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 38px);
+  content: "";
+  inset: -8%;
+  position: absolute;
+}
+
+.globe-lat,
+.globe-meridian {
+  border: 1px solid rgba(104, 246, 255, 0.2);
+  border-radius: 50%;
+  position: absolute;
+}
+
+.globe-lat {
+  height: 22%;
+  left: 7%;
+  right: 7%;
+}
+
+.lat-one {
+  top: 22%;
+}
+
+.lat-two {
+  top: 39%;
+}
+
+.lat-three {
+  top: 56%;
+}
+
+.globe-meridian {
+  bottom: 5%;
+  top: 5%;
+  width: 34%;
+}
+
+.meridian-one {
+  left: 23%;
+}
+
+.meridian-two {
+  right: 23%;
+}
+
+.route-map {
+  inset: 0;
+  position: absolute;
+}
+
+.route-path {
+  fill: none;
+  stroke: var(--pink);
+  stroke-linecap: round;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px rgba(255, 93, 215, 0.82));
+}
+
+.route-tw-ucl {
+  --route-length: 255;
+  stroke-dasharray: 255;
+  stroke-dashoffset: 255;
+  animation: drawRoute 4.2s ease-in-out infinite;
+}
+
+.route-ucl-tu {
+  --route-length: 95;
+  stroke: var(--cyan);
+  stroke-dasharray: 95;
+  stroke-dashoffset: 95;
+  animation: drawRoute 4.2s ease-in-out infinite;
+  animation-delay: 1.35s;
+}
+
+.route-dot {
+  fill: #ffffff;
+  opacity: 0;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
+  animation: showDot 4.2s ease-in-out infinite;
+}
+
+.dot-tw {
+  animation-delay: 0.1s;
+}
+
+.dot-ucl {
+  animation-delay: 1.35s;
+}
+
+.dot-tu {
+  animation-delay: 2.25s;
+}
+
+.campus-pin {
+  align-items: center;
+  animation: risePin 4.2s ease-in-out infinite;
+  background: rgba(19, 7, 31, 0.78);
+  border: 1px solid rgba(255, 93, 215, 0.34);
+  border-radius: 8px;
+  box-shadow: 0 0 22px rgba(255, 93, 215, 0.2);
+  color: #ffffff;
+  display: flex;
+  font-size: 0.74rem;
+  font-weight: 800;
+  min-height: 34px;
+  padding: 7px 10px;
+  position: absolute;
+  text-align: center;
+  transform-origin: center bottom;
+  white-space: nowrap;
+}
+
+.campus-pin::after {
+  background: linear-gradient(180deg, rgba(255, 93, 215, 0.82), transparent);
+  bottom: -42px;
+  content: "";
+  height: 42px;
+  left: 50%;
+  position: absolute;
+  width: 1px;
+}
+
+.pin-yzu {
+  animation-delay: 0.1s;
+  right: 9%;
+  top: 53%;
+}
+
+.pin-ucl {
+  animation-delay: 1.35s;
+  left: 4%;
+  top: 22%;
+}
+
+.pin-tu {
+  animation-delay: 2.25s;
+  left: 32%;
+  top: 12%;
 }
 
 .contact-band {
@@ -598,6 +794,74 @@ li + li {
   }
 }
 
+@keyframes globePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+@keyframes globeScan {
+  from {
+    transform: translateX(-14%);
+  }
+  to {
+    transform: translateX(14%);
+  }
+}
+
+@keyframes drawRoute {
+  0% {
+    stroke-dashoffset: var(--route-length, 255);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes showDot {
+  0%,
+  18% {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  34%,
+  78% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.28;
+    transform: scale(0.82);
+  }
+}
+
+@keyframes risePin {
+  0%,
+  18% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  34%,
+  80% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0.45;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -621,13 +885,15 @@ li + li {
 @media (max-width: 940px) {
   .intro,
   .split-section,
-  .education-skills,
+  .education-section,
   .contact-band {
     grid-template-columns: 1fr;
   }
 
   .project-grid,
-  .wild-grid {
+  .wild-grid,
+  .skill-list,
+  .hobby-grid {
     grid-template-columns: 1fr;
   }
 

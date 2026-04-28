@@ -111,71 +111,16 @@ const skills = [
   ['Languages', 'English, Mandarin, Dutch'],
 ]
 
+const hobbies = [
+  ['Long Trails', 'Hiking and long-distance routes.'],
+  ['Tennis', 'A steady 2.0 court rhythm.'],
+  ['Piano', 'Band keyboard player and quiet practice hours.'],
+]
+
 const asset = (path) => `${import.meta.env.BASE_URL}${path}`
-
-function playMusicBoxTone(audioState) {
-  const now = performance.now()
-  if (now - audioState.lastNote < 430) return
-  audioState.lastNote = now
-
-  const AudioContext = window.AudioContext || window.webkitAudioContext
-  if (!AudioContext) return
-
-  if (!audioState.context) {
-    audioState.context = new AudioContext()
-    audioState.delay = audioState.context.createDelay(1.2)
-    audioState.delay.delayTime.value = 0.22
-    audioState.feedback = audioState.context.createGain()
-    audioState.feedback.gain.value = 0.16
-    audioState.wet = audioState.context.createGain()
-    audioState.wet.gain.value = 0.028
-    audioState.delay.connect(audioState.feedback)
-    audioState.feedback.connect(audioState.delay)
-    audioState.delay.connect(audioState.wet)
-    audioState.wet.connect(audioState.context.destination)
-  }
-
-  const ctx = audioState.context
-  if (ctx.state === 'suspended') ctx.resume()
-
-  const notes = [392, 493.88, 587.33, 659.25, 783.99, 659.25, 587.33]
-  const frequency = notes[audioState.noteIndex % notes.length]
-  audioState.noteIndex += 1
-
-  const osc = ctx.createOscillator()
-  const shimmer = ctx.createOscillator()
-  const gain = ctx.createGain()
-  const shimmerGain = ctx.createGain()
-  const t = ctx.currentTime
-
-  osc.type = 'sine'
-  osc.frequency.setValueAtTime(frequency, t)
-  shimmer.type = 'triangle'
-  shimmer.frequency.setValueAtTime(frequency * 2.01, t)
-
-  gain.gain.setValueAtTime(0.0001, t)
-  gain.gain.exponentialRampToValueAtTime(0.026, t + 0.035)
-  gain.gain.exponentialRampToValueAtTime(0.0001, t + 1.05)
-  shimmerGain.gain.setValueAtTime(0.0001, t)
-  shimmerGain.gain.exponentialRampToValueAtTime(0.006, t + 0.05)
-  shimmerGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.7)
-
-  osc.connect(gain)
-  shimmer.connect(shimmerGain)
-  gain.connect(ctx.destination)
-  gain.connect(audioState.delay)
-  shimmerGain.connect(ctx.destination)
-  shimmerGain.connect(audioState.delay)
-
-  osc.start(t)
-  shimmer.start(t)
-  osc.stop(t + 1.1)
-  shimmer.stop(t + 0.75)
-}
 
 function ParticleTitle() {
   const canvasRef = useRef(null)
-  const audioRef = useRef({ context: null, lastNote: 0, noteIndex: 0 })
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -204,18 +149,18 @@ function ParticleTitle() {
       textContext.clearRect(0, 0, width, height)
       textContext.textAlign = 'center'
       textContext.textBaseline = 'middle'
-      let fontSize = Math.min(width * 0.18, 142)
-      textContext.font = `800 ${fontSize}px Inter, Arial, sans-serif`
+      let fontSize = Math.min(width * 0.22, 168)
+      textContext.font = `900 ${fontSize}px Arial Black, Inter, Arial, sans-serif`
       while (textContext.measureText('Terry Zhang').width > width * 0.92 && fontSize > 42) {
         fontSize -= 4
-        textContext.font = `800 ${fontSize}px Inter, Arial, sans-serif`
+        textContext.font = `900 ${fontSize}px Arial Black, Inter, Arial, sans-serif`
       }
       textContext.fillStyle = '#ffffff'
       textContext.fillText('Terry Zhang', width / 2, height / 2 + fontSize * 0.02)
 
       const imageData = textContext.getImageData(0, 0, textCanvas.width, textCanvas.height).data
       const nextParticles = []
-      const step = Math.max(5, Math.floor(width / 150))
+      const step = Math.max(3, Math.floor(width / 240))
 
       for (let y = 0; y < textCanvas.height; y += step * dpr) {
         for (let x = 0; x < textCanvas.width; x += step * dpr) {
@@ -230,7 +175,7 @@ function ParticleTitle() {
               ty: targetY,
               vx: 0,
               vy: 0,
-              size: Math.random() * 1.3 + 0.8,
+              size: Math.random() * 1.1 + 1.05,
               hue: Math.random() > 0.5 ? 316 : 272,
               phase: Math.random() * Math.PI * 2,
             })
@@ -243,6 +188,12 @@ function ParticleTitle() {
 
     const draw = () => {
       context.clearRect(0, 0, width, height)
+      context.globalCompositeOperation = 'source-over'
+      context.font = `900 ${Math.min(width * 0.22, 168)}px Arial Black, Inter, Arial, sans-serif`
+      context.textAlign = 'center'
+      context.textBaseline = 'middle'
+      context.fillStyle = 'rgba(255, 255, 255, 0.035)'
+      context.fillText('Terry Zhang', width / 2, height / 2)
       context.globalCompositeOperation = 'lighter'
 
       particles.forEach((particle) => {
@@ -282,7 +233,6 @@ function ParticleTitle() {
       pointer.x = event.clientX - rect.left
       pointer.y = event.clientY - rect.top
       pointer.active = true
-      playMusicBoxTone(audioRef.current)
     }
 
     const leavePointer = () => {
@@ -308,6 +258,36 @@ function ParticleTitle() {
   return <canvas ref={canvasRef} className="particle-title" aria-label="Terry Zhang" />
 }
 
+function EducationGlobe() {
+  return (
+    <div className="education-globe" aria-label="Animated education path from Taiwan to London to Delft">
+      <div className="globe-sphere">
+        <div className="globe-lat lat-one" />
+        <div className="globe-lat lat-two" />
+        <div className="globe-lat lat-three" />
+        <div className="globe-meridian meridian-one" />
+        <div className="globe-meridian meridian-two" />
+        <svg className="route-map" viewBox="0 0 420 420" role="img" aria-hidden="true">
+          <path className="route-path route-tw-ucl" d="M286 238 C222 195 168 146 122 118" />
+          <path className="route-path route-ucl-tu" d="M122 118 C144 100 167 94 192 91" />
+          <circle className="route-dot dot-tw" cx="286" cy="238" r="5" />
+          <circle className="route-dot dot-ucl" cx="122" cy="118" r="5" />
+          <circle className="route-dot dot-tu" cx="192" cy="91" r="5" />
+        </svg>
+      </div>
+      <div className="campus-pin pin-yzu">
+        <span>Yuan-Ze University</span>
+      </div>
+      <div className="campus-pin pin-ucl">
+        <span>UCL</span>
+      </div>
+      <div className="campus-pin pin-tu">
+        <span>TU Delft</span>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   return (
     <>
@@ -316,7 +296,9 @@ function App() {
           <a href="#projects">Projects</a>
           <a href="#experience">Industry Notes</a>
           <a href="#education">Education</a>
+          <a href="#skills">Skills</a>
           <a href="#wild">Wild</a>
+          <a href="#hobbies">Hobbies</a>
           <a href="#contact">Contact</a>
         </nav>
       </header>
@@ -357,8 +339,7 @@ function App() {
 
         <section className="section" id="projects" aria-labelledby="projects-title">
           <div className="section-heading">
-            <p className="section-kicker">Build Log</p>
-            <h2 id="projects-title">Robotics Projects</h2>
+            <h2 id="projects-title">Projects: Prototypes on the Trail</h2>
           </div>
           <div className="project-grid">
             {projects.map((project) => {
@@ -414,11 +395,10 @@ function App() {
           </div>
         </section>
 
-        <section className="section education-skills" id="education" aria-labelledby="education-title">
+        <section className="section education-section" id="education" aria-labelledby="education-title">
           <div>
             <div className="section-heading">
-              <p className="section-kicker">Academic</p>
-              <h2 id="education-title">Education</h2>
+              <h2 id="education-title">Education: Coordinates of the Compass</h2>
             </div>
             <div className="education-list">
               {education.map((item) => (
@@ -433,27 +413,26 @@ function App() {
               ))}
             </div>
           </div>
+          <EducationGlobe />
+        </section>
 
-          <div>
-            <div className="section-heading">
-              <p className="section-kicker">Toolkit</p>
-              <h2>Technical skills</h2>
-            </div>
-            <div className="skill-list">
-              {skills.map(([label, value]) => (
-                <div className="skill-row" key={label}>
-                  <span>{label}</span>
-                  <strong>{value}</strong>
-                </div>
-              ))}
-            </div>
+        <section className="section skills-section" id="skills" aria-labelledby="skills-title">
+          <div className="section-heading">
+            <h2 id="skills-title">Skills: The Gear in the Pack</h2>
+          </div>
+          <div className="skill-list">
+            {skills.map(([label, value]) => (
+              <div className="skill-row" key={label}>
+                <span>{label}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
           </div>
         </section>
 
         <section className="section wild-section" id="wild" aria-labelledby="wild-title">
           <div className="section-heading">
-            <p className="section-kicker">Personal Atlas</p>
-            <h2 id="wild-title">Winds of the Wild</h2>
+            <h2 id="wild-title">Travel: Wind of the Wild</h2>
             <p>
               A future gallery for trails, cities, coastlines, and quiet travel moments. The layout is ready for photos and short field notes.
             </p>
@@ -470,11 +449,24 @@ function App() {
           </div>
         </section>
 
+        <section className="section hobbies-section" id="hobbies" aria-labelledby="hobbies-title">
+          <div className="section-heading">
+            <h2 id="hobbies-title">Hobbies: Echoes from the Valley</h2>
+          </div>
+          <div className="hobby-grid">
+            {hobbies.map(([title, description]) => (
+              <article className="hobby-card" key={title}>
+                <h3>{title}</h3>
+                <p>{description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="contact-band" id="contact" aria-labelledby="contact-title">
           <Sparkles className="contact-spark" size={28} aria-hidden="true" />
           <div>
-            <p className="section-kicker">Contact</p>
-            <h2 id="contact-title">Say hello.</h2>
+            <h2 id="contact-title">Contact: Ping the Station</h2>
           </div>
           <div className="contact-links">
             <a href="mailto:zhangruifang0913@outlook.com"><Mail size={18} /> Email</a>
