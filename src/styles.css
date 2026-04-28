@@ -681,7 +681,7 @@ li + li {
   position: absolute;
 }
 
-.continent-map {
+.globe-map {
   inset: 0;
   position: absolute;
   z-index: 1;
@@ -737,56 +737,26 @@ li + li {
   right: 23%;
 }
 
-.route-map {
-  inset: 0;
-  position: absolute;
-  z-index: 2;
-}
-
 .route-path {
   fill: none;
   stroke: var(--pink);
   stroke-linecap: round;
+  stroke-linejoin: round;
   stroke-width: 3;
+  opacity: 0.88;
 }
 
-.route-tw-ucl {
-  --route-length: 175;
-  stroke-dasharray: 175;
-  stroke-dashoffset: 175;
-  animation: drawRoute 4.2s ease-in-out infinite;
-}
-
-.route-ucl-tu {
-  --route-length: 35;
+.route-1 {
   stroke: var(--cyan);
-  stroke-dasharray: 35;
-  stroke-dashoffset: 35;
-  animation: drawRoute 4.2s ease-in-out infinite;
-  animation-delay: 1.35s;
 }
 
 .route-dot {
   fill: #ffffff;
-  opacity: 0;
-  animation: showDot 4.2s ease-in-out infinite;
-}
-
-.dot-tw {
-  animation-delay: 0.1s;
-}
-
-.dot-ucl {
-  animation-delay: 1.35s;
-}
-
-.dot-tu {
-  animation-delay: 2.25s;
+  opacity: 1;
 }
 
 .campus-pin {
   align-items: center;
-  animation: risePin 4.2s ease-in-out infinite;
   background: rgba(19, 7, 31, 0.78);
   border: 1px solid rgba(255, 93, 215, 0.34);
   border-radius: 8px;
@@ -799,6 +769,7 @@ li + li {
   padding: 7px 10px;
   position: absolute;
   text-align: center;
+  transform: translate(-50%, -100%);
   transform-origin: center bottom;
   white-space: nowrap;
   z-index: 3;
@@ -812,24 +783,10 @@ li + li {
   letter-spacing: 0.08em;
   position: absolute;
   text-shadow: 0 0 10px rgba(104, 246, 255, 0.55);
+  transform: translate(-50%, 0);
   text-transform: uppercase;
   white-space: nowrap;
   z-index: 2;
-}
-
-.label-taiwan {
-  right: 13%;
-  top: 45%;
-}
-
-.label-england {
-  left: 47%;
-  top: 28%;
-}
-
-.label-netherlands {
-  left: 55%;
-  top: 22%;
 }
 
 .campus-pin::after {
@@ -840,24 +797,6 @@ li + li {
   left: 50%;
   position: absolute;
   width: 1px;
-}
-
-.pin-yzu {
-  animation-delay: 0.1s;
-  right: 3%;
-  top: 38%;
-}
-
-.pin-ucl {
-  animation-delay: 1.35s;
-  left: 31%;
-  top: 18%;
-}
-
-.pin-tu {
-  animation-delay: 2.25s;
-  left: 52%;
-  top: 8%;
 }
 
 .contact-band {

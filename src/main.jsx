@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   BrainCircuit,
@@ -116,6 +116,81 @@ const hobbies = [
   ['Piano', 'Band keyboard player and quiet practice hours.'],
 ]
 
+const DEG_TO_RAD = Math.PI / 180
+
+const continentPolygons = [
+  {
+    name: 'North America',
+    points: [
+      [-168, 72], [-140, 70], [-110, 65], [-72, 58], [-55, 48], [-78, 28],
+      [-95, 16], [-114, 24], [-124, 42], [-150, 58],
+    ],
+  },
+  {
+    name: 'South America',
+    points: [
+      [-80, 12], [-50, 5], [-36, -12], [-45, -34], [-64, -55], [-75, -42],
+      [-81, -18],
+    ],
+  },
+  {
+    name: 'Europe',
+    points: [
+      [-11, 58], [10, 61], [31, 56], [40, 45], [28, 36], [7, 36], [-6, 43],
+    ],
+  },
+  {
+    name: 'Africa',
+    points: [
+      [-17, 34], [13, 37], [35, 30], [48, 10], [40, -20], [25, -35],
+      [4, -34], [-12, -18], [-18, 6],
+    ],
+  },
+  {
+    name: 'Asia',
+    points: [
+      [36, 55], [70, 66], [118, 60], [150, 48], [145, 22], [120, 8],
+      [96, 18], [78, 6], [58, 18], [42, 36],
+    ],
+  },
+  {
+    name: 'Australia',
+    points: [
+      [112, -12], [134, -10], [154, -25], [146, -39], [116, -35], [109, -22],
+    ],
+  },
+  {
+    name: 'Greenland',
+    points: [
+      [-52, 82], [-24, 78], [-22, 64], [-45, 59], [-64, 68],
+    ],
+  },
+]
+
+const educationStops = [
+  {
+    key: 'yzu',
+    label: 'Yuan-Ze University',
+    region: 'Taiwan',
+    lon: 121.26,
+    lat: 24.97,
+  },
+  {
+    key: 'ucl',
+    label: 'University College London',
+    region: 'England',
+    lon: -0.13,
+    lat: 51.52,
+  },
+  {
+    key: 'tu',
+    label: 'Delft University of Technology',
+    region: 'Netherlands',
+    lon: 4.37,
+    lat: 52.0,
+  },
+]
+
 function SectionTitle({ eyebrow, title, id }) {
   return (
     <>
@@ -123,6 +198,111 @@ function SectionTitle({ eyebrow, title, id }) {
       <h2 id={id}>{title}</h2>
     </>
   )
+}
+
+function latLonToVector([lon, lat]) {
+  const lambda = lon * DEG_TO_RAD
+  const phi = lat * DEG_TO_RAD
+  const cosPhi = Math.cos(phi)
+  return [cosPhi * Math.cos(lambda), cosPhi * Math.sin(lambda), Math.sin(phi)]
+}
+
+function vectorToLatLon([x, y, z]) {
+  return [Math.atan2(y, x) / DEG_TO_RAD, Math.asin(z) / DEG_TO_RAD]
+}
+
+function interpolateGreatCircle(start, end, steps = 44) {
+  const a = latLonToVector(start)
+  const b = latLonToVector(end)
+  const dot = Math.min(1, Math.max(-1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))
+  const omega = Math.acos(dot)
+
+  if (omega < 0.0001) {
+    return [start, end]
+  }
+
+  const sinOmega = Math.sin(omega)
+  return Array.from({ length: steps + 1 }, (_, index) => {
+    const t = index / steps
+    const scaleA = Math.sin((1 - t) * omega) / sinOmega
+    const scaleB = Math.sin(t * omega) / sinOmega
+    return vectorToLatLon([
+      scaleA * a[0] + scaleB * b[0],
+      scaleA * a[1] + scaleB * b[1],
+      scaleA * a[2] + scaleB * b[2],
+    ])
+  })
+}
+
+function createProjector(centerLon, centerLat = 28) {
+  const radius = 178
+  const center = 210
+  const lambda0 = centerLon * DEG_TO_RAD
+  const phi0 = centerLat * DEG_TO_RAD
+  const sinPhi0 = Math.sin(phi0)
+  const cosPhi0 = Math.cos(phi0)
+
+  return ([lon, lat]) => {
+    const lambda = lon * DEG_TO_RAD
+    const phi = lat * DEG_TO_RAD
+    const delta = lambda - lambda0
+    const sinPhi = Math.sin(phi)
+    const cosPhi = Math.cos(phi)
+    const visible = sinPhi0 * sinPhi + cosPhi0 * cosPhi * Math.cos(delta)
+
+    return {
+      x: center + radius * cosPhi * Math.sin(delta),
+      y: center - radius * (cosPhi0 * sinPhi - sinPhi0 * cosPhi * Math.cos(delta)),
+      visible,
+    }
+  }
+}
+
+function pathFromProjected(points, project, close = false) {
+  const projected = points.map(project)
+  const visibleRatio = projected.filter((point) => point.visible > -0.08).length / projected.length
+
+  if (visibleRatio < 0.35) {
+    return ''
+  }
+
+  const path = projected
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
+    .join(' ')
+
+  return close ? `${path} Z` : path
+}
+
+function routePathFromProjected(points, project) {
+  const projected = points.map(project)
+  const segments = []
+  let current = []
+
+  projected.forEach((point) => {
+    if (point.visible > 0.03) {
+      current.push(point)
+      return
+    }
+
+    if (current.length > 1) {
+      segments.push(current)
+    }
+    current = []
+  })
+
+  if (current.length > 1) {
+    segments.push(current)
+  }
+
+  const longest = segments.sort((a, b) => b.length - a.length)[0]
+
+  if (!longest || longest.length < 8) {
+    return ''
+  }
+
+  return longest
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
+    .join(' ')
 }
 
 function ParticleTitle() {
@@ -297,42 +477,102 @@ function ParticleTitle() {
 }
 
 function EducationGlobe() {
+  const [rotation, setRotation] = useState(121)
+
+  useEffect(() => {
+    let frame = 0
+    let start = 0
+    const keyframes = [121, 66, 66, 2.5, 2.5, 121]
+
+    const animate = (timestamp) => {
+      if (!start) {
+        start = timestamp
+      }
+
+      const cycle = ((timestamp - start) % 15000) / 15000
+      const segment = Math.min(4, Math.floor(cycle * 5))
+      const local = cycle * 5 - segment
+      const eased = local < 0.5 ? 2 * local * local : 1 - ((-2 * local + 2) ** 2) / 2
+      const nextRotation = keyframes[segment] + (keyframes[segment + 1] - keyframes[segment]) * eased
+      setRotation(nextRotation)
+      frame = requestAnimationFrame(animate)
+    }
+
+    frame = requestAnimationFrame(animate)
+
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  const globe = useMemo(() => {
+    const project = createProjector(rotation)
+    const routes = [
+      interpolateGreatCircle([educationStops[0].lon, educationStops[0].lat], [educationStops[1].lon, educationStops[1].lat]),
+      interpolateGreatCircle([educationStops[1].lon, educationStops[1].lat], [educationStops[2].lon, educationStops[2].lat], 18),
+    ]
+
+    return {
+      continents: continentPolygons.map((continent) => ({
+        ...continent,
+        path: pathFromProjected(continent.points, project, true),
+      })),
+      stops: educationStops.map((stop) => ({ ...stop, point: project([stop.lon, stop.lat]) })),
+      routes: routes.map((route) => routePathFromProjected(route, project)),
+    }
+  }, [rotation])
+
   return (
     <div className="education-globe" aria-label="Animated education path from Taiwan to London to Delft">
       <div className="globe-sphere">
-        <svg className="continent-map" viewBox="0 0 420 420" aria-hidden="true">
-          <path className="continent north-america" d="M62 126 C90 91 143 86 168 116 C184 136 164 158 141 164 C115 171 108 197 82 190 C55 182 38 151 62 126 Z" />
-          <path className="continent south-america" d="M153 216 C178 226 186 260 176 292 C167 324 143 354 126 340 C111 328 123 293 113 267 C104 241 122 210 153 216 Z" />
-          <path className="continent europe" d="M197 116 C223 99 254 103 264 126 C273 145 249 158 224 152 C202 147 178 139 197 116 Z" />
-          <path className="continent africa" d="M226 170 C260 175 279 211 271 252 C264 292 235 318 212 292 C190 266 194 220 202 190 C205 178 213 171 226 170 Z" />
-          <path className="continent asia" d="M269 124 C318 104 367 128 375 166 C383 203 342 214 322 195 C302 177 283 189 265 171 C247 154 247 134 269 124 Z" />
-          <path className="continent australia" d="M319 279 C345 267 374 277 383 299 C368 319 330 318 310 302 C303 294 307 284 319 279 Z" />
-        </svg>
         <div className="globe-lat lat-one" />
         <div className="globe-lat lat-two" />
         <div className="globe-lat lat-three" />
         <div className="globe-meridian meridian-one" />
         <div className="globe-meridian meridian-two" />
-        <svg className="route-map" viewBox="0 0 420 420" role="img" aria-hidden="true">
-          <path className="route-path route-tw-ucl" d="M332 188 C296 144 255 115 226 122" />
-          <path className="route-path route-ucl-tu" d="M226 122 C232 113 240 109 247 112" />
-          <circle className="route-dot dot-tw" cx="332" cy="188" r="5" />
-          <circle className="route-dot dot-ucl" cx="226" cy="122" r="5" />
-          <circle className="route-dot dot-tu" cx="247" cy="112" r="5" />
+        <svg className="globe-map" viewBox="0 0 420 420" role="img" aria-hidden="true">
+          <defs>
+            <clipPath id="globeClip">
+              <circle cx="210" cy="210" r="178" />
+            </clipPath>
+          </defs>
+          <g clipPath="url(#globeClip)">
+            {globe.continents.map((continent) => (
+              continent.path ? <path className={`continent ${continent.name.toLowerCase().replaceAll(' ', '-')}`} d={continent.path} key={continent.name} /> : null
+            ))}
+            {globe.routes.map((route, index) => (
+              route ? <path className={`route-path route-${index}`} d={route} key={route} /> : null
+            ))}
+            {globe.stops.map((stop) => (
+              stop.point.visible > 0 ? (
+                <circle
+                  className={`route-dot dot-${stop.key}`}
+                  cx={stop.point.x}
+                  cy={stop.point.y}
+                  key={stop.key}
+                  r="5"
+                />
+              ) : null
+            ))}
+          </g>
         </svg>
       </div>
-      <div className="geo-label label-taiwan">Taiwan</div>
-      <div className="geo-label label-england">England</div>
-      <div className="geo-label label-netherlands">Netherlands</div>
-      <div className="campus-pin pin-yzu">
-        <span>Yuan-Ze University</span>
-      </div>
-      <div className="campus-pin pin-ucl">
-        <span>University College London</span>
-      </div>
-      <div className="campus-pin pin-tu">
-        <span>Delft University of Technology</span>
-      </div>
+      {globe.stops.map((stop) => (
+        stop.point.visible > 0 ? (
+          <React.Fragment key={stop.key}>
+            <div
+              className="geo-label"
+              style={{ left: `${(stop.point.x / 420) * 100}%`, top: `${(stop.point.y / 420) * 100 + 6}%` }}
+            >
+              {stop.region}
+            </div>
+            <div
+              className="campus-pin"
+              style={{ left: `${(stop.point.x / 420) * 100}%`, top: `${(stop.point.y / 420) * 100 - 8}%` }}
+            >
+              <span>{stop.label}</span>
+            </div>
+          </React.Fragment>
+        ) : null
+      ))}
     </div>
   )
 }
