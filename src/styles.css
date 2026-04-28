@@ -243,6 +243,7 @@ nav a:hover {
   max-width: min(1180px, 96vw);
   overflow: hidden;
   position: relative;
+  isolation: isolate;
   touch-action: none;
   width: min(1180px, 96vw);
 }
@@ -294,9 +295,9 @@ nav a:hover {
 }
 
 .particle-title:hover .particle-word span {
-  filter: blur(0.45px) drop-shadow(0 0 18px rgba(255, 93, 215, 0.28));
-  opacity: 0.82;
-  transform: translate3d(0, -2px, 0);
+  filter: blur(1.2px) drop-shadow(0 0 22px rgba(255, 93, 215, 0.36));
+  opacity: 0.34;
+  transform: translate3d(0, -3px, 0) scale(1.006);
 }
 
 .eyebrow,

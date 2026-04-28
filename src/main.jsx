@@ -313,9 +313,11 @@ function routePathFromProjected(points, project) {
 
 function ParticleTitle() {
   const canvasRef = useRef(null)
+  const titleRef = useRef(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
+    const title = titleRef.current
     const context = canvas.getContext('2d', { alpha: true })
     const particles = []
     const pointer = { x: -9999, y: -9999, active: false }
@@ -325,8 +327,6 @@ function ParticleTitle() {
     let dpr = 1
     let disposed = false
     let lastDraw = 0
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
     const makeParticles = () => {
       dpr = Math.min(window.devicePixelRatio || 1, 1.5)
       const rect = canvas.getBoundingClientRect()
@@ -406,19 +406,22 @@ function ParticleTitle() {
         const dx = particle.x - pointer.x
         const dy = particle.y - pointer.y
         const distance = Math.sqrt(dx * dx + dy * dy)
-        const repelRadius = pointer.active ? Math.min(150, width * 0.16) : 0
+        const repelRadius = pointer.active ? Math.min(260, width * 0.25) : 0
 
         if (distance < repelRadius) {
-          const force = (1 - distance / repelRadius) * 0.34
+          const force = (1 - distance / repelRadius) * 1.18
           const angle = Math.atan2(dy, dx)
-          particle.vx += Math.cos(angle) * force
-          particle.vy += Math.sin(angle) * force
+          const drift = Math.sin((particle.tx + particle.ty + timestamp * 0.02) * 0.018) * 0.34
+          particle.vx += Math.cos(angle + drift) * force
+          particle.vy += Math.sin(angle + drift) * force
         }
 
-        particle.vx += (particle.tx - particle.x) * 0.026
-        particle.vy += (particle.ty - particle.y) * 0.026
-        particle.vx *= 0.86
-        particle.vy *= 0.86
+        const settle = pointer.active ? 0.012 : 0.035
+        const friction = pointer.active ? 0.9 : 0.84
+        particle.vx += (particle.tx - particle.x) * settle
+        particle.vy += (particle.ty - particle.y) * settle
+        particle.vx *= friction
+        particle.vy *= friction
         particle.x += particle.vx
         particle.y += particle.vy
 
@@ -426,9 +429,7 @@ function ParticleTitle() {
         context.fillRect(particle.x, particle.y, particle.size, particle.size)
       })
 
-      if (!reducedMotion) {
-        animationFrame = requestAnimationFrame(draw)
-      }
+      animationFrame = requestAnimationFrame(draw)
     }
 
     const movePointer = (event) => {
@@ -452,20 +453,20 @@ function ParticleTitle() {
     })
     draw()
     window.addEventListener('resize', makeParticles)
-    canvas.addEventListener('pointermove', movePointer)
-    canvas.addEventListener('pointerleave', leavePointer)
+    title.addEventListener('pointermove', movePointer)
+    title.addEventListener('pointerleave', leavePointer)
 
     return () => {
       disposed = true
       cancelAnimationFrame(animationFrame)
       window.removeEventListener('resize', makeParticles)
-      canvas.removeEventListener('pointermove', movePointer)
-      canvas.removeEventListener('pointerleave', leavePointer)
+      title.removeEventListener('pointermove', movePointer)
+      title.removeEventListener('pointerleave', leavePointer)
     }
   }, [])
 
   return (
-    <div className="particle-title" aria-label="Terry Zhang">
+    <div ref={titleRef} className="particle-title" aria-label="Terry Zhang">
       <canvas ref={canvasRef} className="particle-field" aria-hidden="true" />
       <div className="particle-word" aria-hidden="true">
         <span>Terry</span>
