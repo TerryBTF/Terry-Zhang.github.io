@@ -344,7 +344,7 @@ function ParticleTitle() {
       textContext.clearRect(0, 0, width, height)
       textContext.textAlign = 'center'
       textContext.textBaseline = 'middle'
-      const lines = ['Terry', 'Zhang']
+      const lines = ['TERRY', 'ZHANG']
       let fontSize = Math.min(width * 0.22, 154)
       textContext.font = `900 ${fontSize}px Orbitron, Arial Black, Arial, sans-serif`
       while (Math.max(...lines.map((line) => textContext.measureText(line).width)) > width * 0.62 && fontSize > 42) {
@@ -406,10 +406,10 @@ function ParticleTitle() {
         const dx = particle.x - pointer.x
         const dy = particle.y - pointer.y
         const distance = Math.sqrt(dx * dx + dy * dy)
-        const repelRadius = pointer.active ? Math.min(330, width * 0.3) : 0
+        const repelRadius = pointer.active ? Math.min(190, width * 0.17) : 0
 
         if (distance < repelRadius) {
-          const force = (1 - distance / repelRadius) * 1.58
+          const force = (1 - distance / repelRadius) * 0.92
           const angle = Math.atan2(dy, dx)
           const drift = Math.sin((particle.tx + particle.ty + timestamp * 0.02) * 0.018) * 0.34
           particle.vx += Math.cos(angle + drift) * force
