@@ -346,10 +346,10 @@ function ParticleTitle() {
       textContext.textBaseline = 'middle'
       const lines = ['Terry', 'Zhang']
       let fontSize = Math.min(width * 0.22, 154)
-      textContext.font = `900 ${fontSize}px Arial Black, Arial, sans-serif`
+      textContext.font = `900 ${fontSize}px Orbitron, Arial Black, Arial, sans-serif`
       while (Math.max(...lines.map((line) => textContext.measureText(line).width)) > width * 0.62 && fontSize > 42) {
         fontSize -= 4
-        textContext.font = `900 ${fontSize}px Arial Black, Arial, sans-serif`
+        textContext.font = `900 ${fontSize}px Orbitron, Arial Black, Arial, sans-serif`
       }
       textContext.fillStyle = '#ffffff'
       textContext.fillText(lines[0], width / 2, height / 2 - fontSize * 0.43)
@@ -357,8 +357,8 @@ function ParticleTitle() {
 
       const imageData = textContext.getImageData(0, 0, textCanvas.width, textCanvas.height).data
       const nextParticles = []
-      const step = 3
-      const maxParticles = width < 700 ? 5200 : 9500
+      const step = 2
+      const maxParticles = width < 700 ? 11000 : 26000
 
       for (let y = 0; y < textCanvas.height; y += step * dpr) {
         for (let x = 0; x < textCanvas.width; x += step * dpr) {
@@ -373,7 +373,7 @@ function ParticleTitle() {
               ty: targetY,
               vx: 0,
               vy: 0,
-              size: Math.random() * 0.5 + 1.05,
+              size: Math.random() * 0.65 + 1.85,
               hue: Math.random() > 0.5 ? 316 : 272,
             })
           }
@@ -406,17 +406,17 @@ function ParticleTitle() {
         const dx = particle.x - pointer.x
         const dy = particle.y - pointer.y
         const distance = Math.sqrt(dx * dx + dy * dy)
-        const repelRadius = pointer.active ? Math.min(260, width * 0.25) : 0
+        const repelRadius = pointer.active ? Math.min(330, width * 0.3) : 0
 
         if (distance < repelRadius) {
-          const force = (1 - distance / repelRadius) * 1.18
+          const force = (1 - distance / repelRadius) * 1.58
           const angle = Math.atan2(dy, dx)
           const drift = Math.sin((particle.tx + particle.ty + timestamp * 0.02) * 0.018) * 0.34
           particle.vx += Math.cos(angle + drift) * force
           particle.vy += Math.sin(angle + drift) * force
         }
 
-        const settle = pointer.active ? 0.012 : 0.035
+        const settle = pointer.active ? 0.007 : 0.038
         const friction = pointer.active ? 0.9 : 0.84
         particle.vx += (particle.tx - particle.x) * settle
         particle.vy += (particle.ty - particle.y) * settle
@@ -425,8 +425,13 @@ function ParticleTitle() {
         particle.x += particle.vx
         particle.y += particle.vy
 
-        context.fillStyle = `hsla(${particle.hue}, 100%, 78%, 0.92)`
-        context.fillRect(particle.x, particle.y, particle.size, particle.size)
+        context.fillStyle = `hsla(${particle.hue}, 100%, 82%, 0.94)`
+        context.fillRect(
+          particle.x - particle.size / 2,
+          particle.y - particle.size / 2,
+          particle.size,
+          particle.size,
+        )
       })
 
       animationFrame = requestAnimationFrame(draw)
@@ -468,10 +473,6 @@ function ParticleTitle() {
   return (
     <div ref={titleRef} className="particle-title" aria-label="Terry Zhang">
       <canvas ref={canvasRef} className="particle-field" aria-hidden="true" />
-      <div className="particle-word" aria-hidden="true">
-        <span>Terry</span>
-        <span>Zhang</span>
-      </div>
     </div>
   )
 }
