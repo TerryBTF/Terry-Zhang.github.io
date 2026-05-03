@@ -54,6 +54,22 @@ const projects = [
   },
 ]
 
+const activeSignals = [
+  {
+    title: 'WBCD 2026 Group 4: Bimanual Robot Learning for Deformable Object Manipulation',
+    meta: 'IEEE ICRA 2026 Competition / What Bimanuals Can Do',
+    tag: 'Robot Learning',
+    summary:
+      'Participated in Group 4 of What Bimanuals Can Do (WBCD 2026), focusing on bimanual robot learning for deformable object manipulation.',
+    details: [
+      'Collected offline demonstration trajectories for T-shirt grasping, singulation, placement, edge alignment, and surface smoothing.',
+      'Built a training dataset and trained an initial action-chunk policy model from offline trajectory data.',
+      'Fine-tuned the initial policy through human interventions and corrective feedback to improve recovery from failures and unstable manipulation states.',
+      'Optimized the policy toward WBCD evaluation goals, including task completion quality, data efficiency, and learned policy performance.',
+    ],
+  },
+]
+
 const experience = [
   {
     role: 'ADAS Advisor',
@@ -345,9 +361,9 @@ function ParticleTitle() {
       textContext.textAlign = 'center'
       textContext.textBaseline = 'middle'
       const lines = ['TERRY', 'ZHANG']
-      let fontSize = Math.min(width * 0.22, 154)
+      let fontSize = Math.min(width * 0.24, 172)
       textContext.font = `900 ${fontSize}px Orbitron, Arial Black, Arial, sans-serif`
-      while (Math.max(...lines.map((line) => textContext.measureText(line).width)) > width * 0.62 && fontSize > 42) {
+      while (Math.max(...lines.map((line) => textContext.measureText(line).width)) > width * 0.82 && fontSize > 58) {
         fontSize -= 4
         textContext.font = `900 ${fontSize}px Orbitron, Arial Black, Arial, sans-serif`
       }
@@ -590,6 +606,7 @@ function App() {
       <header className="site-header">
         <nav aria-label="Primary navigation">
           <a href="#projects">Projects</a>
+          <a href="#signals">Signals</a>
           <a href="#experience">Industry Notes</a>
           <a href="#education">Education</a>
           <a href="#skills">Skills</a>
@@ -610,7 +627,9 @@ function App() {
             <h1 className="sr-only">Terry Zhang</h1>
             <ParticleTitle />
             <p className="hero-copy">
-              On long-distance trails, I am accustomed to measuring the vastness of nature with my footsteps; in my career, I have dedicated myself to deciphering the intricate system logic behind the road. From the Porsche China R&D Satellite in Shanghai to the robotics labs at Delft University of Technology, my drive has always been fueled by a quest for the essence of "intelligent machines". By combining a system-level perspective forged in the ADAS industry with my current deep dive into perception and motion planning algorithms, I am exploring how to make robots integrate more seamlessly and naturally into human environments. I am a proactive achiever: rather than waiting for opportunities, I prefer to define my goals and dedicate relentless effort to realizing them. I believe that the most elegant code, much like the most breathtaking scenery, is only reached through full commitment.
+              Measuring nature by foot and decoding the road by logic.
+              <br />
+              Currently bridging ADAS expertise with Robotics & AI at TU Delft to build a more seamless future.
             </p>
           </div>
         </section>
@@ -639,6 +658,30 @@ function App() {
                 </article>
               )
             })}
+          </div>
+        </section>
+
+        <section className="section signals-section" id="signals" aria-labelledby="signals-title">
+          <div className="section-heading">
+            <SectionTitle eyebrow="Current Work" title="Signals in Transmission" id="signals-title" />
+          </div>
+          <div className="signal-card-grid">
+            {activeSignals.map((signal) => (
+              <article className="signal-card" key={signal.title}>
+                <div className="card-topline">
+                  <span className="icon-chip" aria-hidden="true"><BrainCircuit size={20} /></span>
+                  <span>{signal.tag}</span>
+                </div>
+                <h3>{signal.title}</h3>
+                <p className="meta">{signal.meta}</p>
+                <p>{signal.summary}</p>
+                <ul>
+                  {signal.details.map((detail) => (
+                    <li key={detail}>{detail}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
         </section>
 

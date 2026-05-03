@@ -370,6 +370,7 @@ p {
 }
 
 .project-card,
+.signal-card,
 .education-item,
 .skill-row,
 .wild-card,
@@ -387,6 +388,26 @@ p {
   flex-direction: column;
   min-height: 100%;
   padding: 24px;
+}
+
+.signal-card-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 980px;
+}
+
+.signal-card {
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.signal-card h3 {
+  font-size: clamp(1.2rem, 2.1vw, 1.75rem);
+  max-width: 900px;
+}
+
+.signal-card > p {
+  max-width: 860px;
 }
 
 .card-topline {
