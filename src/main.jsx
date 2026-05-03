@@ -27,6 +27,7 @@ const projects = [
       'Implemented cross-modal projection, feature sampling, fusion modules, LiDAR teacher training, and training-time distillation.',
       'Designed reproducible ablations across baseline, fusion, teacher, and distillation settings under constrained compute.',
     ],
+    detailsUrl: 'https://github.com/TerryBTF/AMP_Group12',
   },
   {
     title: 'Carry-No-Spill',
@@ -39,6 +40,7 @@ const projects = [
       'Built with Python, pygame, Box2D/LiquidFun, and esper ECS for rigid-body dynamics, particle simulation, and collision handling.',
       'Added teleoperation, blind-mode evaluation, runtime scoring, trajectory logging, procedural maps, and fixed-seed workflows.',
     ],
+    detailsUrl: `${import.meta.env.BASE_URL}slides/Carrry-no-spill.pdf`,
   },
   {
     title: 'Hierarchical Planning for Mobile Manipulation',
@@ -51,6 +53,7 @@ const projects = [
       'Implemented Informed RRT* with kinodynamic steering and benchmarked MPC against MPPI for real-time control.',
       'Validated in PyBullet simulations, improving time-to-goal while maintaining real-time feasibility.',
     ],
+    detailsUrl: 'https://github.com/martin-gou/pdm_group6',
   },
 ]
 
@@ -617,8 +620,8 @@ function App() {
     <>
       <header className="site-header">
         <nav aria-label="Primary navigation">
-          <a href="#projects">Projects</a>
           <a href="#signals">Signals</a>
+          <a href="#projects">Projects</a>
           <a href="#experience">Industry Notes</a>
           <a href="#education">Education</a>
           <a href="#skills">Skills</a>
@@ -646,33 +649,6 @@ function App() {
           </div>
         </section>
 
-        <section className="section" id="projects" aria-labelledby="projects-title">
-          <div className="section-heading">
-            <SectionTitle eyebrow="Projects" title="Prototypes on the Trail" id="projects-title" />
-          </div>
-          <div className="project-grid">
-            {projects.map((project) => {
-              const Icon = project.icon
-              return (
-                <article className="project-card" key={project.title}>
-                  <div className="card-topline">
-                    <span className="icon-chip" aria-hidden="true"><Icon size={20} /></span>
-                    <span>{project.tag}</span>
-                  </div>
-                  <h3>{project.title}</h3>
-                  <p className="meta">{project.meta}</p>
-                  <p>{project.summary}</p>
-                  <ul>
-                    {project.details.map((detail) => (
-                      <li key={detail}>{detail}</li>
-                    ))}
-                  </ul>
-                </article>
-              )
-            })}
-          </div>
-        </section>
-
         <section className="section signals-section" id="signals" aria-labelledby="signals-title">
           <div className="section-heading">
             <SectionTitle eyebrow="Current Work" title="Signals in Transmission" id="signals-title" />
@@ -694,6 +670,36 @@ function App() {
                 </ul>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="section" id="projects" aria-labelledby="projects-title">
+          <div className="section-heading">
+            <SectionTitle eyebrow="Projects" title="Prototypes on the Trail" id="projects-title" />
+          </div>
+          <div className="project-grid">
+            {projects.map((project) => {
+              const Icon = project.icon
+              return (
+                <article className="project-card" key={project.title}>
+                  <div className="card-topline">
+                    <span className="icon-chip" aria-hidden="true"><Icon size={20} /></span>
+                    <span>{project.tag}</span>
+                  </div>
+                  <h3>{project.title}</h3>
+                  <p className="meta">{project.meta}</p>
+                  <p>{project.summary}</p>
+                  <ul>
+                    {project.details.map((detail) => (
+                      <li key={detail}>{detail}</li>
+                    ))}
+                  </ul>
+                  <a className="details-link" href={project.detailsUrl} target="_blank" rel="noreferrer">
+                    Details
+                  </a>
+                </article>
+              )
+            })}
           </div>
         </section>
 

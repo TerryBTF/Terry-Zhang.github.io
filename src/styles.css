@@ -390,6 +390,27 @@ p {
   padding: 24px;
 }
 
+.details-link {
+  align-self: flex-start;
+  border: 1px solid rgba(104, 246, 255, 0.36);
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: Orbitron, Rajdhani, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-top: auto;
+  padding: 10px 14px;
+  text-transform: uppercase;
+  transition: border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+}
+
+.details-link:hover {
+  border-color: rgba(255, 93, 215, 0.74);
+  box-shadow: 0 0 20px rgba(255, 93, 215, 0.18);
+  transform: translateY(-1px);
+}
+
 .signal-card-grid {
   display: grid;
   gap: 18px;
