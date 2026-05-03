@@ -555,23 +555,21 @@ li + li {
   padding: 24px;
 }
 
-.experience-photo-slot {
-  align-items: center;
-  aspect-ratio: 4 / 3;
-  background:
-    linear-gradient(135deg, rgba(255, 93, 215, 0.18), rgba(104, 246, 255, 0.08)),
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 12px);
-  border: 1px dashed rgba(104, 246, 255, 0.34);
-  border-radius: 8px;
-  color: rgba(247, 234, 255, 0.72);
-  display: flex;
-  flex-direction: column;
-  font-size: 0.82rem;
-  font-weight: 800;
+.experience-photo-grid {
+  display: grid;
   gap: 10px;
-  justify-content: center;
-  min-height: 160px;
-  text-transform: uppercase;
+  grid-template-columns: 1fr;
+}
+
+.experience-photo-grid img {
+  aspect-ratio: 4 / 3;
+  border: 1px solid rgba(104, 246, 255, 0.24);
+  border-radius: 8px;
+  display: block;
+  filter: saturate(0.82) contrast(1.04) brightness(0.88);
+  min-height: 0;
+  object-fit: cover;
+  width: 100%;
 }
 
 .wild-section {
@@ -1045,7 +1043,7 @@ li + li {
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .experience-photo-slot {
+  .experience-photo-grid {
     grid-column: 2;
   }
 }
@@ -1121,7 +1119,7 @@ li + li {
     display: none;
   }
 
-  .experience-photo-slot {
+  .experience-photo-grid {
     grid-column: auto;
   }
 }

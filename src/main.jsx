@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client'
 import {
   BrainCircuit,
   BriefcaseBusiness,
-  Camera,
   Compass,
   Github,
   Mail,
@@ -97,6 +96,7 @@ const experience = [
       'Analyzed and benchmarked sensor fusion and positioning systems through vehicle testing and performance validation.',
       'Designed evaluation workflows covering scenario definition, data collection, and system-level metrics.',
     ],
+    photos: ['porsche-01.jpg', 'porsche-02.jpg'],
   },
   {
     role: 'ADAS Project Manager / Engineer',
@@ -108,6 +108,7 @@ const experience = [
       'Coordinated integration across software, hardware, HIL, and vehicle-level validation teams.',
       'Led system debugging with CAN tools and diagnostic workflows while supporting FuSa and cybersecurity compliance.',
     ],
+    photos: ['ford-01.jpg', 'ford-02.jpg'],
   },
 ]
 
@@ -740,9 +741,15 @@ function App() {
                     ))}
                   </ul>
                 </div>
-                <div className="experience-photo-slot" aria-label={`Photo placeholder for ${item.company}`}>
-                  <Camera size={22} />
-                  <span>Photo space</span>
+                <div className="experience-photo-grid" aria-label={`Photos for ${item.company}`}>
+                  {item.photos.map((photo) => (
+                    <img
+                      key={photo}
+                      src={`${import.meta.env.BASE_URL}images/experience/${photo}`}
+                      alt=""
+                      loading="lazy"
+                    />
+                  ))}
                 </div>
               </article>
             ))}
