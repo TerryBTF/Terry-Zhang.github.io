@@ -343,8 +343,9 @@ function ParticleTitle() {
     let dpr = 1
     let disposed = false
     let lastDraw = 0
+    let forceDprOne = false
     const makeParticles = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+      dpr = forceDprOne ? 1 : Math.min(window.devicePixelRatio || 1, 1.5)
       const rect = canvas.getBoundingClientRect()
       width = Math.max(320, rect.width)
       height = Math.max(220, rect.height)
@@ -374,10 +375,11 @@ function ParticleTitle() {
       const imageData = textContext.getImageData(0, 0, textCanvas.width, textCanvas.height).data
       const nextParticles = []
       const step = 2
+      const pixelStep = Math.max(1, Math.round(step * dpr))
       const maxParticles = width < 700 ? 11000 : 26000
 
-      for (let y = 0; y < textCanvas.height; y += step * dpr) {
-        for (let x = 0; x < textCanvas.width; x += step * dpr) {
+      for (let y = 0; y < textCanvas.height; y += pixelStep) {
+        for (let x = 0; x < textCanvas.width; x += pixelStep) {
           const index = (y * textCanvas.width + x) * 4 + 3
           if (imageData[index] > 80) {
             const targetX = x / dpr + (Math.random() - 0.5) * step * 0.7
@@ -394,6 +396,16 @@ function ParticleTitle() {
             })
           }
         }
+      }
+
+      if (!nextParticles.length && dpr !== 1) {
+        forceDprOne = true
+        dpr = 1
+        canvas.width = Math.floor(width)
+        canvas.height = Math.floor(height)
+        context.setTransform(1, 0, 0, 1, 0, 0)
+        makeParticles()
+        return
       }
 
       if (nextParticles.length > maxParticles) {
