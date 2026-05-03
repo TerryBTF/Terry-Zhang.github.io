@@ -5,6 +5,7 @@ import {
   BriefcaseBusiness,
   Camera,
   Compass,
+  Github,
   Mail,
   MapPin,
   Navigation,
@@ -69,6 +70,18 @@ const activeSignals = [
       'Built a training dataset and trained an initial action-chunk policy model from offline trajectory data.',
       'Fine-tuned the initial policy through human interventions and corrective feedback to improve recovery from failures and unstable manipulation states.',
       'Optimized the policy toward WBCD evaluation goals, including task completion quality, data efficiency, and learned policy performance.',
+    ],
+  },
+  {
+    title: 'Multidisciplinary Robotics Project - Greenhouse Monitoring Robot',
+    meta: 'TU Delft / Apr 2026',
+    tag: 'Autonomous Robotics',
+    summary:
+      'Developing a ROS-based physical robot for autonomous greenhouse monitoring on the MIRTE Master platform in a 5-person multidisciplinary team.',
+    details: [
+      'Responsible for localization while contributing to system integration, functional architecture, and subsystem interface definition.',
+      'Designing and implementing parts of the digital twin and HRI workflow, including operator interaction, teleoperation support, and system-state visualization.',
+      'Supporting project execution through milestone planning, Gantt tracking, and technical coordination.',
     ],
   },
 ]
@@ -365,9 +378,9 @@ function ParticleTitle() {
       textContext.textAlign = 'center'
       textContext.textBaseline = 'middle'
       const lines = ['TERRY', 'ZHANG']
-      let fontSize = Math.min(width * 0.24, 172)
+      let fontSize = Math.min(width * 0.3, 204)
       textContext.font = `900 ${fontSize}px Orbitron, Arial Black, Arial, sans-serif`
-      while (Math.max(...lines.map((line) => textContext.measureText(line).width)) > width * 0.82 && fontSize > 58) {
+      while (Math.max(...lines.map((line) => textContext.measureText(line).width)) > width * 0.9 && fontSize > 68) {
         fontSize -= 4
         textContext.font = `900 ${fontSize}px Orbitron, Arial Black, Arial, sans-serif`
       }
@@ -647,6 +660,9 @@ function App() {
               Currently bridging ADAS expertise with Robotics & AI at TU Delft to build a more seamless future.
             </p>
           </div>
+          <div className="hero-portrait" aria-hidden="true">
+            <img src={`${import.meta.env.BASE_URL}images/terry-hero.jpg`} alt="" />
+          </div>
         </section>
 
         <section className="section signals-section" id="signals" aria-labelledby="signals-title">
@@ -811,6 +827,7 @@ function App() {
           <div className="contact-links">
             <a href="mailto:zhangruifang0913@outlook.com"><Mail size={18} /> Email</a>
             <a href="tel:+31626138070"><Phone size={18} /> Phone</a>
+            <a href="https://github.com/TerryBTF" target="_blank" rel="noreferrer"><Github size={18} /> GitHub: TerryBTF</a>
             <span><Navigation size={18} /> LinkedIn: Ruifang (Terry) Zhang</span>
             <span><MapPin size={18} /> Delft, Netherlands</span>
           </div>
